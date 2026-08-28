@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor View{% endblock %}
+{% block page_title %}Doctor Clinical Dashboard{% endblock %}
+{% block page_subtitle %}Review scheduled consultations, examine patient medical profiles & history{% endblock %}
+
+{% block content %}
+
+<!-- Doctor Header Summary -->
+<div class="card" style="background: linear-gradient(135deg, #0f172a, #1e293b); color:white; margin-bottom:2rem; padding:2rem;">
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
+    <div style="display:flex; align-items:center; gap:1.5rem;">
+      <div style="width:68px; height:68px; background-color:var(--secondary); color:white; border-radius:var(--radius-full); display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:800; flex-shrink:0;">
+        🩺
+      </div>
+      <div>
+        <h2 style="font-size: clamp(1.5rem, 2.5vw, 1.85rem); font-weight:800; color:#fff;">Welcome, {{ current_doctor.name if current_doctor else 'Attending Physician' }}</h2>
+        <p style="font-size:1.05rem; color:#94a3b8; margin-top:0.25rem; font-weight:500;">
+          Specialty: <strong>{{ current_doctor.specialty if current_doctor else 'General Medicine' }}</strong> | Department: {{ current_doctor.department if current_doctor else 'Clinical Care' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Doctor Selector Dropdown for Demo -->
+    <div style="display:flex; align-items:center; gap:0.75rem; background:rgba(255,255,255,0.12); padding:0.75rem 1.25rem; border-radius:var(--radius-md); border:1px solid rgba(255,255,255,0.2);">
+      <span style="font-size:0.95rem; color:#cbd5e1; font-weight:600;">Switch Doctor View:</span>
+      <select onchange="location.href='?doctor_id=' + this.value;" style="background:none; color:white; border:none; font-weight:700; font-size:1rem; cursor:pointer; outline:none;">
+        {% for doc in all_doctors %}
+        <option value="{{ doc.doctor_id }}" {% if selected_doc_id == doc.doctor_id %}selected{% endif %} style="color:black;">
+          {{ doc.name }} ({{ doc.specialty }})
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="profile-grid">
+
+  <!-- Left Side: Doctor's Appointment Schedule -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">🗓️ Scheduled Consultations Agenda</h3>
+      <span class="badge badge-blue" style="font-size:0.9rem; padding:0.4rem 0.95rem;">{{ doctor_appointments | length }} Appointments</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Date</th>
+            <th>Patient Name</th>
+            <th>Patient ID</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appt in doctor_appointments %}
+          <tr {% if selected_patient and selected_patient.patient_id == appt.patient_id %}style="background-color:#e0f2fe;"{% endif %}>
+            <td><span class="badge badge-orange">{{ appt.appointment_time }}</span></td>
+            <td><strong style="font-size:0.95rem;">{{ appt.appointment_date }}</strong></td>
+            <td><strong>{{ appt.patient_name }}</strong></td>
+            <td><span class="badge badge-blue">{{ appt.patient_id }}</span></td>
+            <td>
+              <a href="?doctor_id={{ selected_doc_id }}&patient_id={{ appt.patient_id }}" class="btn btn-primary" style="min-height:38px; padding:0.4rem 0.85rem; font-size:0.875rem;">
+                Examine Record ➔
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" style="text-align:center; padding:2.5rem; color:var(--text-muted);">No appointments assigned for this doctor.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Right Side: Patient Medical File Inspector -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">🔍 Patient Medical Profile Inspector</h3>
+      {% if selected_patient %}
+      <span class="badge badge-green" style="font-size:0.9rem; padding:0.4rem 0.95rem;">{{ selected_patient.patient_id }} Selected</span>
+      {% else %}
+      <span class="badge badge-orange" style="font-size:0.9rem; padding:0.4rem 0.95rem;">Select Patient</span>
+      {% endif %}
+    </div>
+
+    {% if selected_patient %}
+    <div style="background-color:#f8fafc; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-bottom:1.5rem;">
+      <!-- Patient Personal Info -->
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1rem; flex-wrap:wrap; gap:1rem;">
+        <div>
+          <h4 style="font-size:1.35rem; font-weight:800; color:var(--text-main);">{{ selected_patient.full_name }}</h4>
+          <span style="font-size:0.95rem; color:var(--text-muted); font-weight:600;">{{ selected_patient.age }} yrs • {{ selected_patient.gender }} • Date of Birth: {{ selected_patient.date_of_birth }}</span>
+        </div>
+        <a href="{{ url_for('patient_profile', patient_id=selected_patient.patient_id) }}" class="btn btn-secondary" style="min-height:42px; font-size:0.95rem;">Edit Profile</a>
+      </div>
+
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="field-pair">
+          <span class="field-label">Phone</span>
+          <span class="field-value">{{ selected_patient.phone }}</span>
+        </div>
+
+        <div class="field-pair">
+          <span class="field-label">Email</span>
+          <span class="field-value">{{ selected_patient.email }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medical Details -->
+    {% if patient_medical_profile %}
+    <div style="display:flex; flex-direction:column; gap:1.1rem;">
+      
+      <div class="field-pair">
+        <span class="field-label">Blood Group</span>
+        <span class="field-value"><span class="badge badge-red" style="font-size:0.95rem;">{{ patient_medical_profile.blood_group }}</span></span>
+      </div>
+
+      <div class="field-pair" style="background:#fee2e2; padding:0.9rem 1.15rem; border-radius:var(--radius-md); border:1px solid #fca5a5;">
+        <span class="field-label" style="color:#991b1b; font-weight:800;">⚠️ Known Allergies</span>
+        <span class="field-value" style="color:#7f1d1d; font-weight:800; font-size:1.15rem;">{{ patient_medical_profile.allergies }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Existing Chronic Diseases</span>
+        <span class="field-value" style="font-weight:700;">{{ patient_medical_profile.existing_diseases }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Previous Medical & Surgical History</span>
+        <span class="field-value">{{ patient_medical_profile.medical_history }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Current Medications & Dosage</span>
+        <span class="field-value" style="color:var(--primary); font-weight:800; font-size:1.15rem;">{{ patient_medical_profile.current_medications }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Emergency Contact Person</span>
+        <span class="field-value">{{ patient_medical_profile.emergency_name }} ({{ patient_medical_profile.emergency_phone }})</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Insurance Policy</span>
+        <span class="field-value">{{ patient_medical_profile.insurance_details }}</span>
+      </div>
+
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+      No medical profile on record for {{ selected_patient.full_name }}.
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div style="text-align:center; padding:4rem 1.5rem; color:var(--text-muted);">
+      <div style="font-size:3.5rem; margin-bottom:0.75rem;">🩺</div>
+      <p style="font-size:1.1rem; font-weight:600;">Select a patient from the agenda on the left to examine their full personal & medical record.</p>
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock %}

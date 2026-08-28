@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Search Patients{% endblock %}
+{% block page_title %}Patient Search & Data Retrieval{% endblock %}
+{% block page_subtitle %}Search records by Patient ID, Name, or Phone number for complete unified file retrieval{% endblock %}
+
+{% block content %}
+
+<!-- Search Control Bar -->
+<div class="card" style="margin-bottom: 2rem;">
+  <form action="{{ url_for('search') }}" method="GET" style="display:flex; gap:1.25rem; flex-wrap:wrap; align-items:center;">
+    <div style="flex-grow:1; min-width:300px; position:relative;">
+      <input type="text" id="table-search-input" name="q" class="form-control" value="{{ query }}" placeholder="🔍 Search Patient ID (e.g. PAT001), Name (e.g. Rahul), or Phone number..." style="padding-left:1.25rem; min-height:52px; font-size:1.1rem;">
+    </div>
+    <button type="submit" class="btn btn-primary" style="min-height:52px; padding:0 2rem; font-size:1.1rem;">
+      Search Directory
+    </button>
+    {% if query %}
+    <a href="{{ url_for('search') }}" class="btn btn-secondary" style="min-height:52px; display:inline-flex; align-items:center; padding:0 1.5rem; font-size:1.05rem;">Clear Search</a>
+    {% endif %}
+  </form>
+</div>
+
+<!-- Search Results & Patient Detail Layout -->
+{% if selected_patient %}
+
+<div class="card" style="border-color:var(--primary); box-shadow:var(--shadow-md);">
+  <!-- Unified Header Banner -->
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border-color);">
+    <div style="display:flex; align-items:center; gap:1.25rem;">
+      <div style="width:68px; height:68px; background:linear-gradient(135deg, var(--primary), var(--secondary)); color:white; border-radius:var(--radius-full); display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:800; flex-shrink:0;">
+        {{ selected_patient.full_name[0] | upper }}
+      </div>
+      <div>
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <h2 style="font-size: clamp(1.5rem, 2.5vw, 1.85rem); font-weight:800; color:var(--text-main);">{{ selected_patient.full_name }}</h2>
+          <span class="badge badge-blue" style="font-size:0.95rem; padding:0.4rem 0.95rem;">{{ selected_patient.patient_id }}</span>
+        </div>
+        <div style="font-size:1rem; color:var(--text-muted); margin-top:0.35rem; font-weight:600;">
+          📞 {{ selected_patient.phone }} | ✉️ {{ selected_patient.email }}
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+      <a href="{{ url_for('patient_profile', patient_id=selected_patient.patient_id) }}" class="btn btn-secondary" style="min-height:48px;">
+        ✏️ Edit Medical Profile
+      </a>
+      <a href="{{ url_for('appointments') }}?patient_id={{ selected_patient.patient_id }}" class="btn btn-primary" style="min-height:48px;">
+        📅 Book Appointment
+      </a>
+    </div>
+  </div>
+
+  <div class="profile-grid" style="margin-top:2rem;">
+
+    <!-- 1. Personal Information Column -->
+    <div class="card" style="margin-bottom:0; background:#f8fafc; padding:1.75rem;">
+      <h3 class="card-title" style="margin-bottom:1.25rem; font-size:1.2rem;">👤 Personal Information</h3>
+      
+      <div class="field-pair">
+        <span class="field-label">Patient ID</span>
+        <span class="field-value" style="font-weight:800; color:var(--primary); font-size:1.2rem;">{{ selected_patient.patient_id }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Full Name</span>
+        <span class="field-value">{{ selected_patient.full_name }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Age & Gender</span>
+        <span class="field-value">{{ selected_patient.age }} Years • {{ selected_patient.gender }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Date of Birth</span>
+        <span class="field-value">{{ selected_patient.date_of_birth }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Contact Phone</span>
+        <span class="field-value">{{ selected_patient.phone }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Email Address</span>
+        <span class="field-value">{{ selected_patient.email }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Residential Address</span>
+        <span class="field-value">{{ selected_patient.address }}</span>
+      </div>
+    </div>
+
+    <!-- 2. Medical Profile Column -->
+    <div class="card" style="margin-bottom:0; background:#f8fafc; padding:1.75rem;">
+      <h3 class="card-title" style="margin-bottom:1.25rem; font-size:1.2rem;">🩺 Medical Profile</h3>
+
+      {% if medical_profile %}
+      <div class="field-pair">
+        <span class="field-label">Blood Group</span>
+        <span class="field-value"><span class="badge badge-red" style="font-size:0.95rem;">{{ medical_profile.blood_group }}</span></span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Known Allergies</span>
+        <span class="field-value" style="color:#b91c1c; font-weight:700;">{{ medical_profile.allergies }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Existing Chronic Diseases</span>
+        <span class="field-value" style="font-weight:600;">{{ medical_profile.existing_diseases }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Previous Medical History</span>
+        <span class="field-value">{{ medical_profile.medical_history }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Current Medications</span>
+        <span class="field-value" style="color:var(--primary); font-weight:700;">{{ medical_profile.current_medications }}</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Emergency Contact</span>
+        <span class="field-value">{{ medical_profile.emergency_name }} ({{ medical_profile.emergency_phone }})</span>
+      </div>
+
+      <div class="field-pair">
+        <span class="field-label">Insurance Details</span>
+        <span class="field-value">{{ medical_profile.insurance_details }}</span>
+      </div>
+      {% else %}
+      <div class="alert alert-info">
+        No medical profile created yet for this patient.
+      </div>
+      <a href="{{ url_for('patient_profile', patient_id=selected_patient.patient_id) }}" class="btn btn-primary">Create Medical Profile</a>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- 3. Appointment History Section -->
+  <div style="margin-top:2rem; padding-top:1.75rem; border-top:1px solid var(--border-color);">
+    <h3 class="card-title" style="margin-bottom:1.25rem; font-size:1.2rem;">📅 Appointment History & Upcoming Visits</h3>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Appt ID</th>
+            <th>Doctor</th>
+            <th>Department / Specialty</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Reason</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appt in patient_appointments %}
+          <tr>
+            <td><strong>#APT{{ appt.appointment_id }}</strong></td>
+            <td><strong>{{ appt.doctor_name }}</strong></td>
+            <td>{{ appt.specialty if appt.specialty else 'General' }}</td>
+            <td>{{ appt.appointment_date }}</td>
+            <td><span class="badge badge-orange">{{ appt.appointment_time }}</span></td>
+            <td>{{ appt.reason }}</td>
+            <td><span class="badge badge-green">{{ appt.status }}</span></td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No appointments recorded for this patient.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{% endif %}
+
+<!-- Patient Directory Listing -->
+<div class="card" style="margin-top:2rem;">
+  <div class="card-header">
+    <h2 class="card-title">📚 Hospital Patient Directory</h2>
+    <span class="badge badge-blue" style="font-size:0.95rem; padding:0.4rem 0.95rem;">{{ patients | length }} Registered</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Patient ID</th>
+          <th>Full Name</th>
+          <th>Age / Gender</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pat in patients %}
+        <tr>
+          <td><span class="badge badge-blue" style="font-size:0.95rem;"><strong>{{ pat.patient_id }}</strong></span></td>
+          <td><strong>{{ pat.full_name }}</strong></td>
+          <td>{{ pat.age }} yrs / {{ pat.gender }}</td>
+          <td>{{ pat.phone }}</td>
+          <td>{{ pat.email }}</td>
+          <td>
+            <a href="{{ url_for('search') }}?q={{ pat.patient_id }}" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 0.9rem; font-size:0.9rem;">Select Record ➔</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" style="text-align:center; padding:2.5rem; color:var(--text-muted);">No patients matching search query.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

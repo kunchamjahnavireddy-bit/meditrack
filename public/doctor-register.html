@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Registration - MediTrack Healthcare</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+</head>
+<body class="login-body" style="display:block; padding:3rem 1.5rem;">
+
+<div class="login-card" style="max-width:850px; margin:0 auto;">
+  <div class="login-header">
+    <div class="brand-logo" style="width:68px; height:68px; margin: 0 auto 1.25rem; font-size:2.4rem; border-radius:18px;">+</div>
+    <h1 class="login-title">Doctor Professional Registration</h1>
+    <p style="color:var(--text-muted); font-size:1.1rem; margin-top:0.35rem; font-weight:600;">Submit your medical license for hospital verification & Doctor ID activation</p>
+  </div>
+
+  <div id="flash-messages-container"></div>
+
+  <!-- Verification Pending Success Card -->
+  <div id="doctor-pending-container" style="display:none;" class="card" style="background:linear-gradient(135deg, #fff7ed, #ffedd5); border-color:#fed7aa; padding:2.5rem; margin-bottom:2rem; text-align:center;">
+    <div style="font-size:3.5rem; margin-bottom:0.5rem;">🩺</div>
+    <h2 style="font-size:1.9rem; font-weight:800; color:#9a3412; font-family:'Outfit', sans-serif;">Doctor Registration Submitted!</h2>
+    
+    <div style="background:#ffffff; border:2px dashed #ea580c; border-radius:16px; padding:1.5rem; margin:1.75rem 0; box-shadow:var(--shadow-md);">
+      <div style="font-size:0.95rem; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; color:#c2410c;">Medical License / Registration Number</div>
+      <div id="pending-license-tag" style="font-size:2.4rem; font-weight:800; color:#ea580c; letter-spacing:0.06em; margin-top:0.25rem;">LIC-12345</div>
+      <div style="margin-top:0.75rem;"><span class="badge badge-orange" style="font-size:1rem; padding:0.4rem 1.25rem;">Verification Status: Pending Verification</span></div>
+    </div>
+
+    <p style="font-size:1.1rem; color:#7c2d12; line-height:1.6; font-weight:600;">
+      Your professional registration is pending verification by hospital administration.<br>
+      Once verified, your unique <strong>Doctor ID</strong> (e.g. <code>DOC001</code>) will be automatically generated and activated.
+    </p>
+
+    <!-- Hospital Admin Quick-Verify Button for Testing -->
+    <div style="margin-top:2rem; padding:1.25rem; background:rgba(255,255,255,0.8); border-radius:14px; border:1px solid #fed7aa; text-align:center;">
+      <p style="font-size:0.95rem; color:#9a3412; font-weight:700;">Hospital Admin Quick Verification (Demo):</p>
+      <button id="quick-verify-btn" type="button" class="btn btn-success" style="margin-top:0.75rem; min-height:48px;">
+        ✅ Verify Medical License Now & Generate Doctor ID
+      </button>
+    </div>
+
+    <div style="margin-top:2rem; display:flex; justify-content:center; gap:1.25rem;">
+      <a href="/login.html" class="btn btn-primary" style="min-height:54px; padding:0.8rem 2.5rem; font-size:1.15rem;">
+        Go to Doctor Login ➔
+      </a>
+    </div>
+  </div>
+
+  <!-- Doctor Registration Form -->
+  <form id="doctor-registration-form">
+    <div class="form-grid">
+      <!-- Full Name -->
+      <div class="form-group full-width">
+        <label class="form-label" for="doc_name">Doctor Full Name <span class="required">*</span></label>
+        <input type="text" id="doc_name" class="form-control" required placeholder="e.g. Dr. Ananya Sen">
+      </div>
+
+      <!-- Medical License Number -->
+      <div class="form-group full-width" style="background:#fff7ed; padding:1.25rem; border-radius:14px; border:1px solid #fed7aa;">
+        <label class="form-label" for="medical_license_number" style="color:#9a3412;">Medical License / Registration Number <span class="required">*</span></label>
+        <input type="text" id="medical_license_number" class="form-control" required placeholder="e.g. LIC-CARDIO-99881" style="font-weight:700; font-size:1.1rem; color:#7c2d12;">
+        <small style="font-size:0.875rem; color:#c2410c; margin-top:0.35rem; display:block; font-weight:500;">Hospital authorized verification required before account activation.</small>
+      </div>
+
+      <!-- Specialization -->
+      <div class="form-group">
+        <label class="form-label" for="specialty">Specialization <span class="required">*</span></label>
+        <input type="text" id="specialty" class="form-control" required placeholder="e.g. Cardiology, Pediatrics">
+      </div>
+
+      <!-- Department -->
+      <div class="form-group">
+        <label class="form-label" for="department">Department</label>
+        <input type="text" id="department" class="form-control" placeholder="e.g. Cardiology & Vascular">
+      </div>
+
+      <!-- Phone Number -->
+      <div class="form-group">
+        <label class="form-label" for="doc_phone">Phone Number <span class="required">*</span></label>
+        <input type="tel" id="doc_phone" class="form-control" required placeholder="+91 98765 43210">
+      </div>
+
+      <!-- Email Address -->
+      <div class="form-group">
+        <label class="form-label" for="doc_email">Email Address <span class="required">*</span></label>
+        <input type="email" id="doc_email" class="form-control" required placeholder="ananya@meditrack.org">
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label" for="doc_password">Account Password <span class="required">*</span></label>
+        <input type="password" id="doc_password" class="form-control" required placeholder="Create password">
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label class="form-label" for="doc_confirm_password">Confirm Password <span class="required">*</span></label>
+        <input type="password" id="doc_confirm_password" class="form-control" required placeholder="Confirm password">
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:1.25rem; margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--border-color);">
+      <a href="/login.html" class="btn btn-secondary" style="min-height:52px; padding:0.8rem 1.8rem;">← Back to Login</a>
+      <button type="submit" class="btn btn-primary" style="min-height:52px; padding:0.8rem 2.5rem; font-size:1.1rem;">
+        Submit Doctor License Registration ➔
+      </button>
+    </div>
+  </form>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('doctor-registration-form');
+  if (!form) return;
+
+  let currentLicenseSubmitted = '';
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('doc_name').value.trim();
+    const medicalLicenseNumber = document.getElementById('medical_license_number').value.trim();
+    const specialty = document.getElementById('specialty').value.trim();
+    const department = document.getElementById('department').value.trim();
+    const phone = document.getElementById('doc_phone').value.trim();
+    const email = document.getElementById('doc_email').value.trim();
+    const password = document.getElementById('doc_password').value.trim();
+    const confirmPassword = document.getElementById('doc_confirm_password').value.trim();
+
+    if (password !== confirmPassword) {
+      showToast('Passwords do not match.', 'error');
+      return;
+    }
+
+    currentLicenseSubmitted = medicalLicenseNumber;
+
+    try {
+      const res = await fetch('/api/doctors/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, medicalLicenseNumber, specialty, department, phone, email, password })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || 'Failed to submit doctor registration.', 'error');
+        return;
+      }
+
+      form.style.display = 'none';
+      const container = document.getElementById('doctor-pending-container');
+      const licenseTag = document.getElementById('pending-license-tag');
+      if (licenseTag) licenseTag.textContent = data.medicalLicenseNumber;
+      if (container) container.style.display = 'block';
+
+      showToast('Doctor registration submitted for hospital verification.', 'info');
+
+    } catch (err) {
+      console.error('Error registering doctor:', err);
+      showToast('Server communication error.', 'error');
+    }
+  });
+
+  // Quick Verification handler for testing
+  const verifyBtn = document.getElementById('quick-verify-btn');
+  if (verifyBtn) {
+    verifyBtn.addEventListener('click', async () => {
+      try {
+        const res = await fetch('/api/doctors/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ medicalLicenseNumber: currentLicenseSubmitted })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.error || 'Verification failed.', 'error');
+          return;
+        }
+
+        const container = document.getElementById('doctor-pending-container');
+        container.innerHTML = `
+          <div style="font-size:3.5rem; margin-bottom:0.5rem;">🎉</div>
+          <h2 style="font-size:2rem; font-weight:800; color:#14532d; font-family:'Outfit', sans-serif;">Doctor License Verified!</h2>
+          <div style="background:#ffffff; border:2px dashed #16a34a; border-radius:16px; padding:1.5rem; margin:1.75rem 0; box-shadow:var(--shadow-md);">
+            <div style="font-size:0.95rem; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; color:#15803d;">Your Automatically Assigned Doctor ID</div>
+            <div style="font-size:3rem; font-weight:800; color:#0284c7; letter-spacing:0.08em; margin-top:0.25rem;">${data.doctorId}</div>
+          </div>
+          <p style="font-size:1.15rem; color:#166534; line-height:1.6; font-weight:600;">
+            Your account is now active.<br>Please use your <strong>Doctor ID (${data.doctorId})</strong> and password to log in.
+          </p>
+          <a href="/login.html" class="btn btn-primary" style="margin-top:1.5rem; min-height:54px; padding:0.8rem 2.5rem; font-size:1.15rem;">
+            Proceed to Doctor Login ➔
+          </a>
+        `;
+      } catch (err) {
+        console.error("Error verifying doctor:", err);
+      }
+    });
+  }
+});
+</script>
+
+</body>
+</html>

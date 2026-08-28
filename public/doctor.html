@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Clinical Dashboard - MediTrack</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <div class="brand-logo">+</div>
+      <div>
+        <div class="brand-title">MediTrack</div>
+        <div class="brand-subtitle">Patient Care System</div>
+      </div>
+    </div>
+
+    <div id="user-badge-container" class="user-badge"></div>
+
+    <ul class="nav-menu">
+      <!-- Loaded dynamically by app.js based on User Role -->
+    </ul>
+
+    <div class="nav-footer">
+      <a href="#" onclick="logoutUser()" class="btn-logout"><span>Logout</span> 🚪</a>
+    </div>
+  </aside>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div>
+        <h1 class="page-title">Doctor Clinical Dashboard</h1>
+        <p class="page-description">Review assigned appointments, conduct consultations, add diagnoses & treatment notes, issue prescriptions, and schedule follow-ups</p>
+      </div>
+      <div id="current-date-display" class="current-date"></div>
+    </header>
+
+    <div class="content-body">
+      <div id="flash-messages-container"></div>
+
+      <!-- Doctor Header Summary -->
+      <div class="card" style="background: linear-gradient(135deg, #0f172a, #1e293b); color:white; margin-bottom:2rem; padding:2rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
+          <div style="display:flex; align-items:center; gap:1.5rem;">
+            <div style="width:68px; height:68px; background-color:var(--secondary); color:white; border-radius:var(--radius-full); display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:800; flex-shrink:0;">
+              🩺
+            </div>
+            <div>
+              <h2 id="doctor-welcome-title" style="font-size: clamp(1.5rem, 2.5vw, 1.85rem); font-weight:800; color:#fff;">Welcome, Doctor</h2>
+              <p id="doctor-welcome-sub" style="font-size:1.05rem; color:#94a3b8; margin-top:0.25rem; font-weight:500;">
+                Doctor ID: DOC001 | Hospital Verified Account
+              </p>
+            </div>
+          </div>
+          <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <button onclick="toggleDoctorProfileModal(true)" class="btn btn-secondary" style="min-height:46px; font-size:0.95rem;">
+              👤 My Professional Profile
+            </button>
+            <button onclick="scrollSection('emergency-search-card')" class="btn btn-secondary" style="min-height:46px; background:#ef4444; color:#fff; border:none; font-size:0.95rem;">
+              🚨 Emergency Patient Search
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- General Patient Search & Emergency Access Section -->
+      <div id="doctor-search-container" class="card" style="margin-bottom:2.25rem; background:#f8fafc; border:1px solid var(--border-color);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
+          <div>
+            <h3 style="font-size:1.25rem; font-weight:800; color:var(--text-main); margin:0;">🔍 Patient Lookup (Live MongoDB Database)</h3>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.2rem;">Connected to the same MongoDB Patient collection used by Patient Registration</p>
+          </div>
+          <span class="badge badge-blue">MongoDB Collection Connection</span>
+        </div>
+
+        <form id="doctor-patient-search-form" style="display:flex; gap:1rem; max-width:650px; flex-wrap:wrap;">
+          <input type="text" id="doctor_search_pat_id" class="form-control" placeholder="Search by Unique Patient ID (e.g. PAT001) or Name..." required style="flex:1; min-width:250px;">
+          <button type="submit" class="btn btn-primary" style="min-height:48px;">
+            Search Patient 🔍
+          </button>
+        </form>
+        <div id="doctor-search-live-results" style="margin-top:1rem;"></div>
+      </div>
+
+      <!-- Emergency Patient Search Card -->
+      <div id="emergency-search-card" class="card" style="border:2px solid #fca5a5; background:#fff5f5; margin-bottom:2.25rem;">
+        <div class="card-header" style="border-bottom-color:#fca5a5;">
+          <h3 class="card-title" style="color:#991b1b;">🚨 Emergency Patient Search</h3>
+          <span class="badge badge-red">Authorized Emergency Access Only</span>
+        </div>
+        <p style="font-size:0.95rem; color:#7f1d1d; margin-bottom:1rem; font-weight:600;">
+          Search any Unique Patient ID in emergency situations. Every emergency access event creates an audit log while displaying complete medical information.
+        </p>
+        <form id="emergency-search-form" style="display:flex; gap:1rem; max-width:600px; margin-bottom:1rem;">
+          <input type="text" id="emergency_pat_id" class="form-control" placeholder="Enter Unique Patient ID (e.g. PAT001)" required style="border-color:#fca5a5;">
+          <button type="submit" class="btn btn-secondary" style="min-height:52px; background:#dc2626; color:#fff; border:none;">
+            Emergency Search 🚨
+          </button>
+        </form>
+        <div id="emergency-search-results"></div>
+      </div>
+
+      <div class="profile-grid">
+
+        <!-- Left Side: Doctor's Assigned Appointments -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🗓️ My Appointments & Assigned Patients</h3>
+            <span id="doctor-agenda-count" class="badge badge-blue" style="font-size:0.9rem; padding:0.4rem 0.95rem;">0 Appointments</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Time / Date</th>
+                  <th>Patient Name (ID)</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="doctor-agenda-tbody">
+                <tr><td colspan="4" style="text-align:center; padding:2rem;">Loading assigned appointments...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right Side: Patient Record Inspector -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🔍 Patient Record Inspector</h3>
+            <span class="badge badge-green" style="font-size:0.9rem; padding:0.4rem 0.95rem;">Live Clinical File</span>
+          </div>
+
+          <div id="doctor-patient-inspector">
+            <div style="text-align:center; padding:4rem 1.5rem; color:var(--text-muted);">
+              <div style="font-size:3.5rem; margin-bottom:0.75rem;">🩺</div>
+              <p style="font-size:1.1rem; font-weight:600;">Select an appointed patient on the left or execute a Patient Search above to examine clinical records.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal 1: Doctor Profile Modal -->
+<div id="doctor-profile-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:#fff; width:100%; max-width:620px; border-radius:20px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); position:relative;">
+    <button onclick="toggleDoctorProfileModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
+    <div style="border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1.5rem;">
+      <h2 style="font-size:1.6rem; font-weight:800; color:var(--text-main);">👤 Professional Profile</h2>
+      <p style="font-size:0.95rem; color:var(--text-muted); margin-top:0.25rem;">View and manage your medical practice credentials</p>
+    </div>
+    <form id="doctor-profile-form">
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="doc_prof_id">Doctor ID</label>
+          <input type="text" id="doc_prof_id" class="form-control" readonly style="background:#f1f5f9; font-weight:800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="doc_prof_license">License Number</label>
+          <input type="text" id="doc_prof_license" class="form-control" readonly style="background:#f1f5f9;">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="doc_prof_name">Full Name <span class="required">*</span></label>
+        <input type="text" id="doc_prof_name" class="form-control" required>
+      </div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="doc_prof_specialty">Medical Specialty <span class="required">*</span></label>
+          <input type="text" id="doc_prof_specialty" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="doc_prof_department">Department <span class="required">*</span></label>
+          <input type="text" id="doc_prof_department" class="form-control" required>
+        </div>
+      </div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="doc_prof_phone">Contact Phone <span class="required">*</span></label>
+          <input type="text" id="doc_prof_phone" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="doc_prof_email">Email Address <span class="required">*</span></label>
+          <input type="email" id="doc_prof_email" class="form-control" required>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="doc_prof_location">Practice Location / City <span class="required">*</span></label>
+        <input type="text" id="doc_prof_location" class="form-control" required>
+      </div>
+      <div style="margin-top:1.75rem; display:flex; justify-content:flex-end; gap:1rem;">
+        <button type="button" onclick="toggleDoctorProfileModal(false)" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">💾 Update Profile ➔</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal 2: Diagnosis & Treatment Notes Modal -->
+<div id="doctor-notes-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:#fff; width:100%; max-width:650px; border-radius:20px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); position:relative;">
+    <button onclick="toggleNotesModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
+    <div style="border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1.5rem;">
+      <h2 style="font-size:1.6rem; font-weight:800; color:var(--text-main);">📝 Record Diagnosis & Treatment Notes</h2>
+      <p style="font-size:0.95rem; color:var(--text-muted); margin-top:0.25rem;">Clinical consultation record for <strong id="notes-modal-patname">Patient</strong></p>
+    </div>
+    <form id="doctor-add-notes-form">
+      <input type="hidden" id="notes_patient_id" required>
+      <input type="hidden" id="notes_appt_id">
+      <div class="form-group">
+        <label class="form-label" for="notes_diagnosis">Clinical Diagnosis <span class="required">*</span></label>
+        <input type="text" id="notes_diagnosis" class="form-control" required placeholder="e.g. Acute Respiratory Infection, Stage 1 Hypertension">
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="notes_treatment">Treatment & Consultation Notes</label>
+        <textarea id="notes_treatment" class="form-control" rows="3" placeholder="e.g. Patient advised 5 days rest, fluid intake, and prescribed medicines..."></textarea>
+      </div>
+      <div style="margin-top:1.75rem; display:flex; justify-content:flex-end; gap:1rem;">
+        <button type="button" onclick="toggleNotesModal(false)" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">💾 Save Clinical Record ➔</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal 3: Schedule Follow-Up Modal -->
+<div id="doctor-followup-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:#fff; width:100%; max-width:600px; border-radius:20px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); position:relative;">
+    <button onclick="toggleFollowupModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
+    <div style="border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1.5rem;">
+      <h2 style="font-size:1.6rem; font-weight:800; color:var(--text-main);">🗓️ Schedule Follow-Up Consultation</h2>
+      <p style="font-size:0.95rem; color:var(--text-muted); margin-top:0.25rem;">Book follow-up appointment for <strong id="followup-modal-patname">Patient</strong></p>
+    </div>
+    <form id="doctor-schedule-followup-form">
+      <input type="hidden" id="followup_patient_id" required>
+      <div class="form-group">
+        <label class="form-label" for="followup_date">Follow-Up Date <span class="required">*</span></label>
+        <input type="date" id="followup_date" class="form-control" required>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="followup_time">Time Slot <span class="required">*</span></label>
+        <select id="followup_time" class="form-control" required>
+          <option value="09:00 AM">09:00 AM</option>
+          <option value="10:00 AM">10:00 AM</option>
+          <option value="11:00 AM">11:00 AM</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="02:00 PM">02:00 PM</option>
+          <option value="03:00 PM">03:00 PM</option>
+          <option value="04:00 PM">04:00 PM</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="followup_reason">Reason / Notes</label>
+        <input type="text" id="followup_reason" class="form-control" placeholder="e.g. Post-treatment review">
+      </div>
+      <div style="margin-top:1.75rem; display:flex; justify-content:flex-end; gap:1rem;">
+        <button type="button" onclick="toggleFollowupModal(false)" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Schedule Follow-Up ➔</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal 4: Prescription Modal -->
+<div id="doctor-prescription-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:#fff; width:100%; max-width:700px; max-height:90vh; overflow-y:auto; border-radius:20px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); position:relative;">
+    <button onclick="togglePrescriptionModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
+    <div style="border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1.5rem;">
+      <h2 style="font-size:1.6rem; font-weight:800; color:var(--text-main);">💊 Create Patient Prescription</h2>
+      <p style="font-size:0.95rem; color:var(--text-muted); margin-top:0.25rem;">Issue prescription medicines after consultation for <strong id="prescription-modal-patname">Patient</strong></p>
+    </div>
+    <form id="doctor-create-prescription-form">
+      <input type="hidden" id="rx_patient_id" required>
+      <div class="form-group">
+        <label class="form-label" for="rx_medicine_name">Medicine Name <span class="required">*</span></label>
+        <input type="text" id="rx_medicine_name" class="form-control" required placeholder="e.g. Paracetamol, Amoxicillin">
+      </div>
+      <div class="form-grid" style="grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="rx_dosage">Dosage <span class="required">*</span></label>
+          <input type="text" id="rx_dosage" class="form-control" required placeholder="e.g. 500 mg, 10 ml">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="rx_frequency">Timing / Frequency <span class="required">*</span></label>
+          <input type="text" id="rx_frequency" class="form-control" required placeholder="e.g. Twice daily, Once daily">
+        </div>
+      </div>
+      <div class="form-grid" style="grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="rx_duration">Duration <span class="required">*</span></label>
+          <input type="text" id="rx_duration" class="form-control" required placeholder="e.g. 5 days, 14 days">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="rx_instructions">Instructions</label>
+          <input type="text" id="rx_instructions" class="form-control" placeholder="e.g. Take after food with warm water">
+        </div>
+      </div>
+      <div style="margin-top:2rem; display:flex; justify-content:flex-end; gap:1rem; border-top:1px solid var(--border-color); padding-top:1.25rem;">
+        <button type="button" onclick="togglePrescriptionModal(false)" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">💾 Issue Prescription ➔</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/doctor.js"></script>
+</body>
+</html>

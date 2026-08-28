@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Patients - MediTrack</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <div class="brand-logo">+</div>
+      <div>
+        <div class="brand-title">MediTrack</div>
+        <div class="brand-subtitle">Patient Care System</div>
+      </div>
+    </div>
+
+    <div id="user-badge-container" class="user-badge"></div>
+
+    <ul class="nav-menu">
+      <li class="nav-item"><a href="/dashboard.html"><span class="nav-icon">📊</span><span>Dashboard</span></a></li>
+      <li class="nav-item"><a href="/register.html"><span class="nav-icon">👤</span><span>Register Patient</span></a></li>
+      <li class="nav-item active"><a href="/search.html"><span class="nav-icon">🔍</span><span>Search Patients</span></a></li>
+      <li class="nav-item"><a href="/appointments.html"><span class="nav-icon">📅</span><span>Appointments</span></a></li>
+      <li class="nav-item"><a href="/doctor.html"><span class="nav-icon">🩺</span><span>Doctor View</span></a></li>
+    </ul>
+
+    <div class="nav-footer">
+      <a href="#" onclick="logoutUser()" class="btn-logout"><span>Logout</span> 🚪</a>
+    </div>
+  </aside>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div>
+        <h1 class="page-title">Patient Search & Data Retrieval</h1>
+        <p class="page-description">Search records by Patient ID, Name, or Phone number for complete unified file retrieval</p>
+      </div>
+      <div id="current-date-display" class="current-date"></div>
+    </header>
+
+    <div class="content-body">
+      <div id="flash-messages-container"></div>
+
+      <!-- Search Control Bar -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <form id="search-form" style="display:flex; gap:1.25rem; flex-wrap:wrap; align-items:center;">
+          <div style="flex-grow:1; min-width:300px; position:relative;">
+            <input type="text" id="table-search-input" class="form-control" placeholder="🔍 Search Patient ID (e.g. PAT001), Name (e.g. Rahul), or Phone number..." style="padding-left:1.25rem; min-height:52px; font-size:1.1rem;">
+          </div>
+          <button type="submit" class="btn btn-primary" style="min-height:52px; padding:0 2rem; font-size:1.1rem;">
+            Search Directory
+          </button>
+          <a href="/search.html" class="btn btn-secondary" style="min-height:52px; display:inline-flex; align-items:center; padding:0 1.5rem; font-size:1.05rem;">Clear Search</a>
+        </form>
+      </div>
+
+      <!-- Unified Record Drawer Container -->
+      <div id="selected-patient-record-container" style="display:none;" class="card" style="border-color:var(--primary); box-shadow:var(--shadow-md);">
+        <!-- Unified Header Banner -->
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border-color);">
+          <div style="display:flex; align-items:center; gap:1.25rem;">
+            <div id="record-initial" style="width:68px; height:68px; background:linear-gradient(135deg, var(--primary), var(--secondary)); color:white; border-radius:var(--radius-full); display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:800; flex-shrink:0;">
+              P
+            </div>
+            <div>
+              <div style="display:flex; align-items:center; gap:0.75rem;">
+                <h2 id="record-full-name" style="font-size: clamp(1.5rem, 2.5vw, 1.85rem); font-weight:800; color:var(--text-main);">Loading...</h2>
+                <span id="record-patient-id" class="badge badge-blue" style="font-size:0.95rem; padding:0.4rem 0.95rem;">PAT...</span>
+              </div>
+              <div id="record-contact" style="font-size:1rem; color:var(--text-muted); margin-top:0.35rem; font-weight:600;">
+                Loading contact details...
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <a id="edit-profile-btn" href="#" class="btn btn-secondary" style="min-height:48px;">✏️ Edit Medical Profile</a>
+            <a id="book-appointment-btn" href="#" class="btn btn-primary" style="min-height:48px;">📅 Book Appointment</a>
+          </div>
+        </div>
+
+        <div class="profile-grid" style="margin-top:2rem;">
+          <!-- 1. Personal Info -->
+          <div class="card" style="margin-bottom:0; background:#f8fafc; padding:1.75rem;">
+            <h3 class="card-title" style="margin-bottom:1.25rem; font-size:1.2rem;">👤 Personal Information</h3>
+            <div id="record-personal-info" class="form-grid" style="grid-template-columns: 1fr 1fr;">Loading...</div>
+          </div>
+
+          <!-- 2. Medical Profile -->
+          <div class="card" style="margin-bottom:0; background:#f8fafc; padding:1.75rem;">
+            <h3 class="card-title" style="margin-bottom:1.25rem; font-size:1.2rem;">🩺 Medical Profile</h3>
+            <div id="record-medical-profile">Loading...</div>
+          </div>
+        </div>
+
+        <!-- 3. Appointment History Section -->
+        <div style="margin-top:2rem; padding-top:1.75rem; border-top:1px solid var(--border-color);">
+          <h3 class="card-title" style="margin-bottom:1.25rem; font-size:1.2rem;">📅 Appointment History & Upcoming Visits</h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Appt ID</th>
+                  <th>Doctor</th>
+                  <th>Department / Specialty</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="record-appointments-tbody">
+                <tr><td colspan="7" style="text-align:center; padding:2rem;">Loading appointments...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patient Directory Listing -->
+      <div class="card" style="margin-top:2rem;">
+        <div class="card-header">
+          <h2 class="card-title">📚 Hospital Patient Directory</h2>
+          <span id="patient-count-badge" class="badge badge-blue" style="font-size:0.95rem; padding:0.4rem 0.95rem;">0 Registered</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Patient ID</th>
+                <th>Full Name</th>
+                <th>Age / Gender</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="patient-directory-tbody">
+              <tr><td colspan="6" style="text-align:center; padding:2.5rem;">Loading directory...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/search.js"></script>
+</body>
+</html>

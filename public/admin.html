@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Center - MediTrack</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <div class="brand-logo" style="background: linear-gradient(135deg, #f43f5e, #be123c);">⚙️</div>
+      <div>
+        <div class="brand-title" style="background: linear-gradient(to right, #ffffff, #fca5a5); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MediTrack</div>
+        <div class="brand-subtitle">System Administration</div>
+      </div>
+    </div>
+
+    <div id="user-badge-container" class="user-badge"></div>
+
+    <ul class="nav-menu">
+      <!-- Loaded dynamically by app.js -->
+    </ul>
+
+    <div class="nav-footer">
+      <a href="#" onclick="logoutUser()" class="btn-logout"><span>Logout</span> 🚪</a>
+    </div>
+  </aside>
+
+  <!-- Main Workspace -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div>
+        <h1 class="page-title">Admin Control Center</h1>
+        <p class="page-description">Manage system users, doctor credentials, doctor appointments catalog, hospital network, and security audit logs</p>
+      </div>
+      <div id="current-date-display" class="current-date"></div>
+    </header>
+
+    <div class="content-body">
+      <div id="flash-messages-container"></div>
+
+      <!-- 1. System Overview Section -->
+      <div class="card" style="background: linear-gradient(135deg, #0f172a, #1e293b); color: white; margin-bottom: 2.25rem; padding: 2.25rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: #fff;">📊 System Overview (Live MongoDB Data)</h2>
+          <span class="badge" style="background: rgba(244,63,94,0.2); color: #fca5a5; border: 1px solid rgba(244,63,94,0.4);">Administrative Authority</span>
+        </div>
+
+        <div class="stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 0;">
+          <!-- Patient Stat -->
+          <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 1.5rem;">
+            <div style="font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Patients</div>
+            <div id="stat-patients-total" style="font-size: 2.5rem; font-weight: 800; color: #fff; margin: 0.35rem 0;">-</div>
+            <div style="font-size: 0.85rem; color: #cbd5e1;">
+              Active: <strong id="stat-patients-active" style="color:#86efac;">-</strong> |
+              Inactive: <strong id="stat-patients-inactive" style="color:#fdba74;">-</strong> |
+              Deceased: <strong id="stat-patients-deceased" style="color:#fca5a5;">-</strong> |
+              Deleted: <strong id="stat-patients-deleted" style="color:#cbd5e1;">-</strong>
+            </div>
+          </div>
+
+          <!-- Doctor Stat -->
+          <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 1.5rem;">
+            <div style="font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Doctors</div>
+            <div id="stat-doctors-total" style="font-size: 2.5rem; font-weight: 800; color: #fff; margin: 0.35rem 0;">-</div>
+            <div style="font-size: 0.85rem; color: #cbd5e1;">
+              Active: <strong id="stat-doctors-active" style="color:#86efac;">-</strong> |
+              Suspended: <strong id="stat-doctors-suspended" style="color:#fca5a5;">-</strong> |
+              Deleted: <strong id="stat-doctors-deleted" style="color:#cbd5e1;">-</strong>
+            </div>
+          </div>
+
+          <!-- Hospital & Appts Stat -->
+          <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 1.5rem;">
+            <div style="font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Hospitals / Today's Appts</div>
+            <div style="font-size: 2.5rem; font-weight: 800; color: #fff; margin: 0.35rem 0;">
+              <span id="stat-hospitals-total">-</span> <span style="font-size: 1.2rem; color: #94a3b8;">/</span> <span id="stat-appts-today" style="color:#38bdf8;">-</span>
+            </div>
+            <div style="font-size: 0.85rem; color: #cbd5e1;">Hospitals Registered & Today's Appointments</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Nav Tabs -->
+      <div style="display:flex; gap:0.75rem; margin-bottom:2rem; flex-wrap:wrap;">
+        <button onclick="scrollSection('admin-patients-section')" class="btn btn-secondary" style="min-height:42px; font-size:0.9rem;">👥 Patient Management</button>
+        <button onclick="scrollSection('admin-doctors-section')" class="btn btn-secondary" style="min-height:42px; font-size:0.9rem;">🩺 Doctor Management</button>
+        <button onclick="scrollSection('admin-appointments-section')" class="btn btn-secondary" style="min-height:42px; font-size:0.9rem;">📅 Appointments Catalog</button>
+        <button onclick="scrollSection('admin-hospitals-section')" class="btn btn-secondary" style="min-height:42px; font-size:0.9rem;">🏥 Hospital Network</button>
+        <button onclick="scrollSection('admin-audit-section')" class="btn btn-secondary" style="min-height:42px; font-size:0.9rem;">📜 Security Audit Logs</button>
+      </div>
+
+      <!-- 2. Patient Management Section -->
+      <div id="admin-patients-section" class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">👥 Patient Account Management</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">Create new patient accounts, deactivate, mark Deceased, or delete login accounts</p>
+          </div>
+          <div style="display:flex; gap:0.75rem; align-items:center;">
+            <select id="patient_filter_status" onchange="fetchAdminPatients()" class="form-control" style="max-width:160px; height:38px; font-size:0.85rem;">
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="deceased">Deceased</option>
+              <option value="deleted">Deleted</option>
+            </select>
+            <button onclick="togglePatientModal(true)" class="btn btn-primary" style="min-height:42px; font-size:0.9rem;">
+              + Register Patient
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Patient ID</th>
+                <th>Name</th>
+                <th>Age / Gender</th>
+                <th>Contact Details</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-patients-tbody">
+              <tr><td colspan="7" style="text-align:center; padding:2rem;">Loading patients list...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. Doctor Management Section -->
+      <div id="admin-doctors-section" class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🩺 Doctor Account & License Management</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">Register new doctors, manage credentials, license suspensions, and login access</p>
+          </div>
+          <div style="display:flex; gap:0.75rem; align-items:center;">
+            <select id="doctor_filter_status" onchange="fetchAdminDoctors()" class="form-control" style="max-width:160px; height:38px; font-size:0.85rem;">
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+              <option value="inactive">Inactive</option>
+              <option value="deleted">Deleted</option>
+            </select>
+            <button onclick="toggleDoctorModal(true)" class="btn btn-primary" style="min-height:42px; font-size:0.9rem;">
+              + Register Doctor
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Doctor ID</th>
+                <th>Name</th>
+                <th>Specialty / Dept</th>
+                <th>License Number</th>
+                <th>License Status</th>
+                <th>Location</th>
+                <th>Account Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-doctors-tbody">
+              <tr><td colspan="8" style="text-align:center; padding:2rem;">Loading doctors list...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. System-Wide Doctor Appointments Catalog Section -->
+      <div id="admin-appointments-section" class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">📅 System Doctor Appointments Catalog</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">Monitor all doctor appointments system-wide: view which patient booked which doctor, date, time, and status</p>
+          </div>
+          <div style="display:flex; gap:0.75rem; align-items:center;">
+            <select id="appt_filter_status" onchange="fetchAdminAppointments()" class="form-control" style="max-width:160px; height:38px; font-size:0.85rem;">
+              <option value="">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+            <span class="badge badge-blue">Read-Only Monitoring</span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Appt ID</th>
+                <th>Patient Details</th>
+                <th>Doctor Details</th>
+                <th>Specialty & Dept</th>
+                <th>Date & Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="admin-appts-tbody">
+              <tr><td colspan="6" style="text-align:center; padding:2rem;">Loading appointments catalog...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5. Hospital / Clinic Management Section -->
+      <div id="admin-hospitals-section" class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🏥 Hospital / Clinic Network Management</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">Register and manage healthcare facilities in the MediTrack network</p>
+          </div>
+          <button onclick="toggleHospitalModal(true)" class="btn btn-primary" style="min-height:42px; font-size:0.9rem;">
+            + Register Hospital
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Hospital ID</th>
+                <th>Facility Name</th>
+                <th>Address</th>
+                <th>Location</th>
+                <th>Contact Info</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-hospitals-tbody">
+              <tr><td colspan="7" style="text-align:center; padding:2rem;">Loading hospitals...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 6. Role Permissions Matrix Section -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🔒 Role-Based Access Control (RBAC) Matrix</h2>
+          <span class="badge badge-blue">Backend Enforced</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Clinical Diagnosis & RX</th>
+                <th>Appointment Booking</th>
+                <th>User Account Management</th>
+                <th>Audit Log Access</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge" style="background:#fee2e2; color:#991b1b;">ADMIN</span></td>
+                <td>❌ Forbidden</td>
+                <td>❌ Read-Only Catalog</td>
+                <td>✅ Full Control</td>
+                <td>✅ Full Read Access</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-blue">DOCTOR</span></td>
+                <td>✅ Authorized Only</td>
+                <td>✅ Manage Care / Confirm</td>
+                <td>❌ Forbidden</td>
+                <td>❌ Forbidden</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-orange">PATIENT</span></td>
+                <td>❌ Forbidden</td>
+                <td>✅ Own Appointments</td>
+                <td>❌ Own Profile Only</td>
+                <td>❌ Forbidden</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 7. Security Audit Logs Section -->
+      <div id="admin-audit-section" class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">📜 System Security Audit Logs</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">Immutable audit trail of administrator actions, doctor status changes, patient record deletions, and authentication events</p>
+          </div>
+          <span class="badge badge-orange">Security Audit</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Log ID</th>
+                <th>Timestamp</th>
+                <th>Performed By (Admin)</th>
+                <th>Action Type</th>
+                <th>Target ID</th>
+                <th>IP / Metadata Details</th>
+              </tr>
+            </thead>
+            <tbody id="admin-audit-tbody">
+              <tr><td colspan="6" style="text-align:center; padding:2rem;">Loading security audit logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Modal 1: Register Doctor -->
+<div id="create-doctor-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:#fff; width:100%; max-width:640px; max-height:90vh; overflow-y:auto; border-radius:20px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); position:relative;">
+    <button onclick="toggleDoctorModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
+    <div style="border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1.5rem;">
+      <h2 style="font-size:1.5rem; font-weight:800; color:var(--text-main);">🩺 Register & Authorize Doctor</h2>
+      <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">Create a verified doctor account with specialty and medical license credentials</p>
+    </div>
+    <form id="create-doctor-form">
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="doc_name">Doctor Full Name <span class="required">*</span></label>
+          <input type="text" id="doc_name" class="form-control" required placeholder="e.g. Dr. Rajesh Kumar">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="doc_email">Email Address <span class="required">*</span></label>
+          <input type="email" id="doc_email" class="form-control" required placeholder="rajesh@meditrack.org">
+        </div>
+      </div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="doc_specialty">Specialty <span class="required">*</span></label>
+          <input type="text" id="doc_specialty" class="form-control" required placeholder="e.g. Cardiology">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="doc_department">Department</label>
+          <input type="text" id="doc_department" class="form-control" value="Cardiology">
+        </div>
+      </div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="doc_license">Medical License # <span class="required">*</span></label>
+          <input type="text" id="doc_license" class="form-control" required placeholder="e.g. MCI-88992">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="doc_location">Location / City <span class="required">*</span></label>
+          <input type="text" id="doc_location" class="form-control" required value="Kurnool">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="doc_password">Initial Account Password <span class="required">*</span></label>
+        <input type="password" id="doc_password" class="form-control" required placeholder="Set password for doctor login">
+      </div>
+      <div style="margin-top:1.75rem; display:flex; justify-content:flex-end; gap:1rem;">
+        <button type="button" onclick="toggleDoctorModal(false)" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Authorize & Save Doctor ➔</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal 2: Register Patient -->
+<div id="create-patient-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:#fff; width:100%; max-width:640px; max-height:90vh; overflow-y:auto; border-radius:20px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); position:relative;">
+    <button onclick="togglePatientModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
+    <div style="border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1.5rem;">
+      <h2 style="font-size:1.5rem; font-weight:800; color:var(--text-main);">👥 Register Patient Account</h2>
+      <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">Create a new patient account with auto-generated Unique Patient ID</p>
+    </div>
+    <form id="create-patient-form">
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem;">
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label" for="pat_name">Full Name <span class="required">*</span></label>
+          <input type="text" id="pat_name" class="form-control" required placeholder="e.g. Kavita Rao">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pat_age">Age <span class="required">*</span></label>
+          <input type="number" id="pat_age" class="form-control" required min="1" max="120" value="30">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pat_gender">Gender <span class="required">*</span></label>
+          <select id="pat_gender" class="form-control" required>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pat_dob">Date of Birth <span class="required">*</span></label>
+          <input type="date" id="pat_dob" class="form-control" required value="1996-01-01">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pat_phone">Phone Number <span class="required">*</span></label>
+          <input type="text" id="pat_phone" class="form-control" required placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pat_email">Email Address <span class="required">*</span></label>
+          <input type="email" id="pat_email" class="form-control" required placeholder="kavita@example.com">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="pat_address">Residential Address <span class="required">*</span></label>
+        <input type="text" id="pat_address" class="form-control" required placeholder="e.g. 56 Main Street, Kurnool">
+      </div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="pat_location">Location / City</label>
+          <input type="text" id="pat_location" class="form-control" value="Kurnool">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pat_password">Initial Password <span class="required">*</span></label>
+          <input type="password" id="pat_password" class="form-control" required value="med12345">
+        </div>
+      </div>
+      <div style="margin-top:1.75rem; display:flex; justify-content:flex-end; gap:1rem;">
+        <button type="button" onclick="togglePatientModal(false)" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Register Patient ➔</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal 4: Create Hospital -->
+<div id="create-hospital-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:#fff; width:100%; max-width:600px; border-radius:20px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); position:relative;">
+    <button onclick="toggleHospitalModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
+    <div style="border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1.5rem;">
+      <h2 style="font-size:1.5rem; font-weight:800; color:var(--text-main);">🏥 Register Hospital / Clinic</h2>
+      <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">Add a new healthcare facility to the MediTrack network</p>
+    </div>
+    <form id="create-hospital-form">
+      <div class="form-group">
+        <label class="form-label" for="hosp_name">Facility Name <span class="required">*</span></label>
+        <input type="text" id="hosp_name" class="form-control" required placeholder="e.g. City Care Specialty Hospital">
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="hosp_address">Full Address <span class="required">*</span></label>
+        <input type="text" id="hosp_address" class="form-control" required placeholder="e.g. 45 Park Road, Kurnool">
+      </div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="hosp_location">Location / City <span class="required">*</span></label>
+          <input type="text" id="hosp_location" class="form-control" required value="Kurnool">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="hosp_phone">Contact Phone <span class="required">*</span></label>
+          <input type="text" id="hosp_phone" class="form-control" required placeholder="+91 8518 220011">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="hosp_email">Contact Email <span class="required">*</span></label>
+        <input type="email" id="hosp_email" class="form-control" required placeholder="info@citycare.org">
+      </div>
+      <div style="margin-top:1.75rem; display:flex; justify-content:flex-end; gap:1rem;">
+        <button type="button" onclick="toggleHospitalModal(false)" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Register Facility ➔</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal 5: Account Deletion Confirmation Modal -->
+<div id="delete-account-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.75); backdrop-filter:blur(6px); z-index:1100; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:#fff; width:100%; max-width:580px; border-radius:24px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.4); position:relative; border:1px solid #fecdd3;">
+    <button onclick="toggleDeleteModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
+
+    <div style="display:flex; align-items:center; gap:1rem; border-bottom:1px solid var(--border-color); padding-bottom:1.25rem; margin-bottom:1.5rem;">
+      <div style="width:52px; height:52px; background:#ffe4e6; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#e11d48; flex-shrink:0;">🗑️</div>
+      <div>
+        <h2 style="font-size:1.4rem; font-weight:800; color:#9f1239; margin:0;">Delete User Account?</h2>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin:0.2rem 0 0;">Permanently disable login credentials for target account</p>
+      </div>
+    </div>
+
+    <!-- Target Info Box -->
+    <div style="background:#fff1f2; border:1px solid #fecdd3; border-radius:14px; padding:1.25rem; margin-bottom:1.5rem; font-size:0.95rem;">
+      <div style="display:grid; grid-template-columns: 120px 1fr; gap:0.5rem; margin-bottom:0.4rem;">
+        <span style="font-weight:700; color:#9f1239;">Target ID:</span>
+        <strong id="del_modal_target_id" style="font-family:monospace; font-size:1.1rem; color:#881337;">-</strong>
+      </div>
+      <div style="display:grid; grid-template-columns: 120px 1fr; gap:0.5rem; margin-bottom:0.4rem;">
+        <span style="font-weight:700; color:#9f1239;">Full Name:</span>
+        <span id="del_modal_name" style="font-weight:700;">-</span>
+      </div>
+      <div style="display:grid; grid-template-columns: 120px 1fr; gap:0.5rem; margin-bottom:0.4rem;">
+        <span style="font-weight:700; color:#9f1239;">Role:</span>
+        <span id="del_modal_role" style="text-transform:capitalize; font-weight:700;">-</span>
+      </div>
+      <div style="display:grid; grid-template-columns: 120px 1fr; gap:0.5rem;">
+        <span style="font-weight:700; color:#9f1239;">Current Status:</span>
+        <span id="del_modal_status" style="text-transform:capitalize; font-weight:700;">-</span>
+      </div>
+    </div>
+
+    <!-- Warning banner -->
+    <div style="background:#fef2f2; border-left:4px solid #ef4444; padding:0.9rem 1.1rem; border-radius:8px; margin-bottom:1.5rem; font-size:0.88rem; color:#7f1d1d; line-height:1.5;">
+      ℹ️ <strong>Zero Data Loss Guarantee:</strong> This action permanently disables the user's login account. Medical profiles, patient histories, appointment records, prescriptions, and reports will remain 100% preserved in the system.
+    </div>
+
+    <form id="delete-account-form">
+      <div class="form-group">
+        <label class="form-label" for="delete_confirm_input" style="font-weight:800; color:var(--text-main);">
+          Type <code id="del_modal_code_display" style="background:#ffe4e6; color:#9f1239; padding:0.2rem 0.5rem; border-radius:6px; font-size:1rem;">ID</code> to confirm deletion: <span class="required">*</span>
+        </label>
+        <input type="text" id="delete_confirm_input" class="form-control" required placeholder="Enter User ID to confirm" style="text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-top:0.5rem;">
+      </div>
+
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="delete_reason_input">Deletion Reason</label>
+        <input type="text" id="delete_reason_input" class="form-control" placeholder="Administrative account removal">
+      </div>
+
+      <div style="margin-top:1.75rem; display:flex; justify-content:flex-end; gap:1rem;">
+        <button type="button" onclick="toggleDeleteModal(false)" class="btn btn-secondary">Cancel</button>
+        <button type="submit" id="btn-submit-delete" class="btn btn-primary" style="background:#b91c1c; border-color:#991b1b;">
+          Confirm Permanent Account Deletion ➔
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

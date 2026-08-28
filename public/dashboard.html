@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - MediTrack</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <div class="brand-logo">+</div>
+      <div>
+        <div class="brand-title">MediTrack</div>
+        <div class="brand-subtitle">Patient Care System</div>
+      </div>
+    </div>
+
+    <div id="user-badge-container" class="user-badge"></div>
+
+    <ul class="nav-menu">
+      <li class="nav-item active">
+        <a href="/dashboard.html">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/register.html">
+          <span class="nav-icon">👤</span>
+          <span>Register Patient</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/search.html">
+          <span class="nav-icon">🔍</span>
+          <span>Search Patients</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/appointments.html">
+          <span class="nav-icon">📅</span>
+          <span>Appointments</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/doctor.html">
+          <span class="nav-icon">🩺</span>
+          <span>Doctor View</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-footer">
+      <a href="#" onclick="logoutUser()" class="btn-logout">
+        <span>Logout</span> 🚪
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div>
+        <h1 id="page-heading-title" class="page-title">Hospital Dashboard</h1>
+        <p id="page-heading-sub" class="page-description">Overview of Patient Registration & Appointment Metrics</p>
+      </div>
+      <div id="current-date-display" class="current-date"></div>
+    </header>
+
+    <div class="content-body">
+      <div id="flash-messages-container"></div>
+
+      <!-- KPI Stats Grid -->
+      <div id="kpi-stats-container" class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <div>
+            <div id="stat-total-patients" class="stat-value">--</div>
+            <div class="stat-label">Total Patients</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple">📅</div>
+          <div>
+            <div id="stat-total-appointments" class="stat-value">--</div>
+            <div class="stat-label">Total Appointments</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">🕒</div>
+          <div>
+            <div id="stat-available-today" class="stat-value">--</div>
+            <div class="stat-label">Available Slots Today</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon orange">📌</div>
+          <div>
+            <div id="stat-booked-today" class="stat-value">--</div>
+            <div class="stat-label">Booked Appointments Today</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Receptionist Module Main Container (Shown when logged in as Receptionist) -->
+      <div id="receptionist-module-section" style="display:none;">
+        
+        <!-- Quick Action Toolbar -->
+        <div class="card" style="background:linear-gradient(135deg, #f8fafc, #f1f5f9); padding:1.5rem; margin-bottom:2rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+            <div>
+              <h3 style="font-size:1.3rem; font-weight:800; color:var(--text-main); margin:0;">📋 Reception Operations Center</h3>
+              <p style="font-size:0.95rem; color:var(--text-muted); margin-top:0.25rem;">Manage doctor schedules, today's & upcoming appointments, patient lookup, and medicine instructions</p>
+            </div>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+              <button onclick="scrollSection('rec-search-section')" class="btn btn-primary" style="min-height:44px; padding:0.6rem 1.25rem; font-size:0.95rem;">
+                🔍 Patient Search
+              </button>
+              <button onclick="scrollSection('rec-rx-section')" class="btn btn-secondary" style="min-height:44px; padding:0.6rem 1.25rem; font-size:0.95rem;">
+                💊 Prescriptions View
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. Today's Appointments Section -->
+        <div class="card" style="margin-bottom:2.25rem;">
+          <div class="card-header">
+            <h2 class="card-title">📅 Today's Appointments</h2>
+            <span id="rec-today-date-badge" class="badge badge-green">Loading date...</span>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Time Slot</th>
+                  <th>Patient Name (ID)</th>
+                  <th>Doctor Assigned</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rec-today-tbody">
+                <tr><td colspan="5" style="text-align:center; padding:2rem;">Loading today's appointments...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 2. Upcoming Appointments Section -->
+        <div class="card" style="margin-bottom:2.25rem;">
+          <div class="card-header">
+            <h2 class="card-title">📆 Upcoming Appointments (Sorted Date ➔ Time)</h2>
+            <span class="badge badge-blue">Future Agenda</span>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Patient Name (ID)</th>
+                  <th>Doctor Assigned</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rec-upcoming-tbody">
+                <tr><td colspan="5" style="text-align:center; padding:2rem;">Loading upcoming appointments...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 3. Doctor Appointment Schedules Section -->
+        <div class="card" style="margin-bottom:2.25rem;">
+          <div class="card-header">
+            <h2 class="card-title">🩺 Doctor Appointment Schedules & Availability</h2>
+            <span class="badge badge-blue">All Verified Doctors</span>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Doctor Name & ID</th>
+                  <th>Specialization / Location</th>
+                  <th>Appointment Date & Time</th>
+                  <th>Patient Name & ID</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="rec-schedules-tbody">
+                <tr><td colspan="5" style="text-align:center; padding:2rem;">Loading doctor schedules...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4. Basic Patient Details Search Section -->
+        <div id="rec-search-section" class="card" style="margin-bottom:2.25rem;">
+          <div class="card-header">
+            <h2 class="card-title">🔍 Basic Patient Information Search</h2>
+            <span class="badge badge-orange">Strict Non-Medical Access</span>
+          </div>
+          <form id="rec-patient-search-form" style="margin-bottom:1.5rem;">
+            <div style="display:flex; gap:1rem; max-width:600px;">
+              <input type="text" id="rec_search_pat_id" class="form-control" placeholder="Enter Patient ID (e.g. PAT001)" required>
+              <button type="submit" class="btn btn-primary" style="min-height:52px;">Search 🔍</button>
+            </div>
+          </form>
+          <div id="rec-patient-basic-result">
+            <p style="color:var(--text-muted);">Enter a Patient ID above to view basic demographic details and doctor prescriptions.</p>
+          </div>
+        </div>
+
+        <!-- 5. Doctor Prescription & Medicine Instructions View Section -->
+        <div id="rec-rx-section" class="card">
+          <div class="card-header">
+            <h2 class="card-title">💊 Doctor Prescriptions & Medicine Information</h2>
+            <span class="badge badge-green">Read-Only Dispensing Helper</span>
+          </div>
+          <form id="rec-rx-search-form" style="margin-bottom:1.5rem;">
+            <div style="display:flex; gap:1rem; max-width:600px;">
+              <input type="text" id="rec_rx_pat_id" class="form-control" placeholder="Filter by Patient ID (e.g. PAT001) or leave blank for all">
+              <button type="submit" class="btn btn-secondary" style="min-height:52px;">Filter Prescriptions</button>
+            </div>
+          </form>
+          <div id="rec-prescriptions-container">
+            <p style="color:var(--text-muted);">Loading prescriptions...</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Navigation Cards (For non-receptionists) -->
+      <div id="default-quick-cards" class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-header">
+          <h2 class="card-title">🚀 Quick Actions & Navigation</h2>
+        </div>
+        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+          <a href="/register.html" class="card" style="text-decoration:none; margin-bottom:0; background:linear-gradient(135deg, #f0f9ff, #e0f2fe); border-color:#bae6fd; padding:1.75rem;">
+            <div style="font-size:2.2rem; margin-bottom:0.75rem;">📝</div>
+            <div style="font-size:1.2rem; font-weight:800; color:#0369a1;">Register Patient</div>
+            <div style="font-size:0.95rem; color:#0c4a6e; margin-top:0.35rem; font-weight:500;">Generate unique Patient ID</div>
+          </a>
+
+          <a href="/appointments.html" class="card" style="text-decoration:none; margin-bottom:0; background:linear-gradient(135deg, #f0fdf4, #dcfce7); border-color:#bbf7d0; padding:1.75rem;">
+            <div style="font-size:2.2rem; margin-bottom:0.75rem;">🗓️</div>
+            <div style="font-size:1.2rem; font-weight:800; color:#15803d;">Book Appointment</div>
+            <div style="font-size:0.95rem; color:#14532d; margin-top:0.35rem; font-weight:500;">Select doctor, date & available time slot</div>
+          </a>
+
+          <a href="/search.html" class="card" style="text-decoration:none; margin-bottom:0; background:linear-gradient(135deg, #faf5ff, #f3e8ff); border-color:#e9d5ff; padding:1.75rem;">
+            <div style="font-size:2.2rem; margin-bottom:0.75rem;">🔎</div>
+            <div style="font-size:1.2rem; font-weight:800; color:#7e22ce;">Patient Lookup</div>
+            <div style="font-size:0.95rem; color:#581c87; margin-top:0.35rem; font-weight:500;">Search by PAT ID or Name</div>
+          </a>
+
+          <a href="/doctor.html" class="card" style="text-decoration:none; margin-bottom:0; background:linear-gradient(135deg, #fff7ed, #ffedd5); border-color:#fed7aa; padding:1.75rem;">
+            <div style="font-size:2.2rem; margin-bottom:0.75rem;">🩺</div>
+            <div style="font-size:1.2rem; font-weight:800; color:#c2410c;">Doctor View</div>
+            <div style="font-size:0.95rem; color:#7c2d12; margin-top:0.35rem; font-weight:500;">View clinical schedule & records</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Appointments Overview (For non-receptionists) -->
+      <div id="default-recent-appts-card" class="card">
+        <div class="card-header">
+          <h2 class="card-title">📋 Scheduled Appointments Overview</h2>
+          <a href="/appointments.html" class="btn btn-primary">+ New Booking</a>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Appt ID</th>
+                <th>Patient ID</th>
+                <th>Patient Name</th>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Time Slot</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="dashboard-recent-tbody">
+              <tr><td colspan="7" style="text-align:center; padding:2rem;">Loading live dashboard stats...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Reschedule Appointment Modal -->
+<div id="rec-reschedule-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:#fff; width:100%; max-width:600px; border-radius:20px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); position:relative;">
+    <button onclick="toggleRescheduleModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
+    <div style="border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1.5rem;">
+      <h2 style="font-size:1.5rem; font-weight:800; color:var(--text-main);">🗓️ Reschedule Appointment</h2>
+      <p style="font-size:0.95rem; color:var(--text-muted); margin-top:0.25rem;">Select new date and time slot for <strong id="reschedule-appt-title">#APT...</strong></p>
+    </div>
+    <form id="rec-reschedule-form">
+      <input type="hidden" id="reschedule_appt_id" required>
+      <div class="form-group">
+        <label class="form-label" for="reschedule_date">New Appointment Date <span class="required">*</span></label>
+        <input type="date" id="reschedule_date" class="form-control" required>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="reschedule_time">New Time Slot <span class="required">*</span></label>
+        <select id="reschedule_time" class="form-control" required>
+          <option value="09:00 AM">09:00 AM</option>
+          <option value="10:00 AM">10:00 AM</option>
+          <option value="11:00 AM">11:00 AM</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="02:00 PM">02:00 PM</option>
+          <option value="03:00 PM">03:00 PM</option>
+          <option value="04:00 PM">04:00 PM</option>
+        </select>
+      </div>
+      <div style="margin-top:1.75rem; display:flex; justify-content:flex-end; gap:1rem;">
+        <button type="button" onclick="toggleRescheduleModal(false)" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Confirm Reschedule ➔</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Print Preview Modal Container -->
+<div id="printable-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index:1050; align-items:center; justify-content:center; padding:1.5rem;">
+  <div style="background:#fff; width:100%; max-width:750px; max-height:90vh; overflow-y:auto; border-radius:20px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); position:relative;">
+    <button onclick="togglePrintModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
+    <div id="printable-document">
+      <!-- Generated dynamically for printing -->
+    </div>
+    <div style="margin-top:1.75rem; display:flex; justify-content:flex-end; gap:1rem; border-top:1px solid var(--border-color); padding-top:1.25rem;">
+      <button type="button" onclick="togglePrintModal(false)" class="btn btn-secondary">Close</button>
+      <button type="button" onclick="window.print()" class="btn btn-primary">🖨️ Print Document</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/receptionist.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = getCurrentUser();
+
+  if (user.role === 'receptionist') {
+    document.getElementById('page-heading-title').textContent = 'Receptionist Operations Dashboard';
+    document.getElementById('page-heading-sub').textContent = "Manage doctor schedules, today's & upcoming appointments, patient lookup & prescription details";
+    
+    document.getElementById('default-quick-cards').style.display = 'none';
+    document.getElementById('default-recent-appts-card').style.display = 'none';
+    document.getElementById('receptionist-module-section').style.display = 'block';
+
+    initReceptionistDashboard();
+  } else {
+    try {
+      const resStats = await fetch('/api/doctors/stats');
+      const stats = await resStats.json();
+      document.getElementById('stat-total-patients').textContent = stats.totalPatients || 0;
+      document.getElementById('stat-total-appointments').textContent = stats.totalAppointments || 0;
+      document.getElementById('stat-available-today').textContent = stats.availableToday || 0;
+      document.getElementById('stat-booked-today').textContent = stats.bookedToday || 0;
+
+      const resAppts = await fetch('/api/appointments');
+      const appts = await resAppts.json();
+      const tbody = document.getElementById('dashboard-recent-tbody');
+      
+      if (!appts || appts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2.5rem; color:var(--text-muted);">No appointments booked yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      appts.slice(0, 6).forEach(a => {
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>#APT${a.appointmentId}</strong></td>
+            <td><span class="badge badge-blue">${a.patientId}</span></td>
+            <td><strong>${a.patientName || a.patientId}</strong></td>
+            <td>${a.doctorName}</td>
+            <td>${a.appointmentDate}</td>
+            <td><span class="badge badge-orange">${a.appointmentTime}</span></td>
+            <td><span class="badge badge-green">${a.status}</span></td>
+          </tr>
+        `;
+      });
+    } catch (err) {
+      console.error('Error loading dashboard:', err);
+    }
+  }
+});
+
+function scrollSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

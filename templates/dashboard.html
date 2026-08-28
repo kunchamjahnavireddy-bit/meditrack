@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Hospital Dashboard{% endblock %}
+{% block page_subtitle %}Overview of Patient Registration & Appointment Metrics{% endblock %}
+
+{% block content %}
+<!-- KPI Stats Grid -->
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue">👥</div>
+    <div>
+      <div class="stat-value">{{ stats.total_patients }}</div>
+      <div class="stat-label">Total Patients</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon purple">📅</div>
+    <div>
+      <div class="stat-value">{{ stats.total_appointments }}</div>
+      <div class="stat-label">Total Appointments</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon green">🕒</div>
+    <div>
+      <div class="stat-value">{{ stats.available_today }}</div>
+      <div class="stat-label">Available Slots Today</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon orange">📌</div>
+    <div>
+      <div class="stat-value">{{ stats.booked_today }}</div>
+      <div class="stat-label">Booked Appointments Today</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Navigation Cards -->
+<div class="card" style="margin-bottom: 2.5rem;">
+  <div class="card-header">
+    <h2 class="card-title">🚀 Quick Actions & Navigation</h2>
+  </div>
+  <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+    <a href="{{ url_for('register') }}" class="card" style="text-decoration:none; margin-bottom:0; background:linear-gradient(135deg, #f0f9ff, #e0f2fe); border-color:#bae6fd; padding:1.75rem;">
+      <div style="font-size:2.2rem; margin-bottom:0.75rem;">📝</div>
+      <div style="font-size:1.2rem; font-weight:800; color:#0369a1;">Register Patient</div>
+      <div style="font-size:0.95rem; color:#0c4a6e; margin-top:0.35rem; font-weight:500;">Generate unique Patient ID & save personal records</div>
+    </a>
+
+    <a href="{{ url_for('appointments') }}" class="card" style="text-decoration:none; margin-bottom:0; background:linear-gradient(135deg, #f0fdf4, #dcfce7); border-color:#bbf7d0; padding:1.75rem;">
+      <div style="font-size:2.2rem; margin-bottom:0.75rem;">🗓️</div>
+      <div style="font-size:1.2rem; font-weight:800; color:#15803d;">Book Appointment</div>
+      <div style="font-size:0.95rem; color:#14532d; margin-top:0.35rem; font-weight:500;">Select doctor, date & available time slot</div>
+    </a>
+
+    <a href="{{ url_for('search') }}" class="card" style="text-decoration:none; margin-bottom:0; background:linear-gradient(135deg, #faf5ff, #f3e8ff); border-color:#e9d5ff; padding:1.75rem;">
+      <div style="font-size:2.2rem; margin-bottom:0.75rem;">🔎</div>
+      <div style="font-size:1.2rem; font-weight:800; color:#7e22ce;">Patient Lookup</div>
+      <div style="font-size:0.95rem; color:#581c87; margin-top:0.35rem; font-weight:500;">Search by PAT ID, Name or Phone number</div>
+    </a>
+
+    <a href="{{ url_for('doctor_view') }}" class="card" style="text-decoration:none; margin-bottom:0; background:linear-gradient(135deg, #fff7ed, #ffedd5); border-color:#fed7aa; padding:1.75rem;">
+      <div style="font-size:2.2rem; margin-bottom:0.75rem;">🩺</div>
+      <div style="font-size:1.2rem; font-weight:800; color:#c2410c;">Doctor View</div>
+      <div style="font-size:0.95rem; color:#7c2d12; margin-top:0.35rem; font-weight:500;">View clinical schedule & patient medical profiles</div>
+    </a>
+  </div>
+</div>
+
+<!-- Recent Appointments Table -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">📋 Scheduled Appointments Overview</h2>
+    <a href="{{ url_for('appointments') }}" class="btn btn-primary">+ New Booking</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Appt ID</th>
+          <th>Patient ID</th>
+          <th>Patient Name</th>
+          <th>Doctor</th>
+          <th>Date</th>
+          <th>Time Slot</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in recent_appointments %}
+        <tr>
+          <td><strong>#APT{{ appt.appointment_id }}</strong></td>
+          <td><span class="badge badge-blue">{{ appt.patient_id }}</span></td>
+          <td><strong>{{ appt.patient_name }}</strong></td>
+          <td>{{ appt.doctor_name }}</td>
+          <td>{{ appt.appointment_date }}</td>
+          <td><span class="badge badge-orange">{{ appt.appointment_time }}</span></td>
+          <td><span class="badge badge-green">{{ appt.status }}</span></td>
+          <td>
+            <a href="{{ url_for('search') }}?q={{ appt.patient_id }}" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 0.9rem; font-size:0.9rem;">View Patient ➔</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" style="text-align:center; padding:2.5rem; color:var(--text-muted);">No appointments booked yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - MediTrack Healthcare System</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+</head>
+<body class="login-body">
+
+<div class="login-card">
+  <div class="login-header">
+    <div class="brand-logo" style="width:68px; height:68px; margin: 0 auto 1.25rem; font-size:2.4rem; border-radius:18px;">+</div>
+    <h1 class="login-title">MediTrack</h1>
+    <p style="color:var(--text-muted); font-size:1.1rem; margin-top:0.35rem; font-weight:600;">Select Role to Sign In</p>
+  </div>
+
+  <div id="flash-messages-container"></div>
+
+  <!-- Role Selection Tabs for Core System Roles (Patient, Doctor, Admin) -->
+  <div class="role-tab-group" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="role-tab active" onclick="selectRole('patient', 'Patient ID')">Patient</div>
+    <div class="role-tab" onclick="selectRole('doctor', 'Doctor ID')">Doctor</div>
+    <div class="role-tab" onclick="selectRole('admin', 'Admin ID')">Admin</div>
+  </div>
+
+  <form id="login-form">
+    <input type="hidden" id="role_field" value="patient">
+
+    <div class="form-group">
+      <label id="username-label" class="form-label" for="username">Patient ID</label>
+      <input type="text" id="username" class="form-control" required placeholder="Enter Patient ID (e.g. PAT001)">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="password">Password</label>
+      <input type="password" id="password" class="form-control" required placeholder="Enter password">
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1.5rem; min-height:56px; font-size:1.15rem;">
+      Log In ➔
+    </button>
+  </form>
+
+  <!-- Registration Links Container Based on Selected Role -->
+  <div id="register-link-container" style="margin-top:1.75rem; text-align:center;">
+    <p id="patient-reg-link" style="font-size:1.05rem; color:var(--text-muted); font-weight:600;">
+      New Patient? <a href="/register.html" style="color:var(--primary); font-weight:800; text-decoration:underline;">Register Here</a>
+    </p>
+    <p id="doctor-reg-link" style="font-size:1.05rem; color:var(--text-muted); font-weight:600; display:none;">
+      New Doctor? <a href="/doctor-register.html" style="color:var(--primary); font-weight:800; text-decoration:underline;">Register Medical Account Here</a>
+    </p>
+    <p id="admin-reg-notice" style="font-size:0.95rem; color:var(--text-muted); font-weight:600; display:none;">
+      🔒 Administrator access is restricted to authorized MediTrack system managers.
+    </p>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+function selectRole(role, labelText) {
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  if (event && event.target) {
+    event.target.classList.add('active');
+  }
+  document.getElementById('role_field').value = role;
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+
+  const label = document.getElementById('username-label');
+  const patLink = document.getElementById('patient-reg-link');
+  const docLink = document.getElementById('doctor-reg-link');
+  const adminNotice = document.getElementById('admin-reg-notice');
+  label.textContent = labelText;
+
+  if (role === 'patient') {
+    document.getElementById('username').placeholder = 'Enter Patient ID (e.g. PAT001) or Email';
+    if (patLink) patLink.style.display = 'block';
+    if (docLink) docLink.style.display = 'none';
+    if (adminNotice) adminNotice.style.display = 'none';
+  } else if (role === 'doctor') {
+    document.getElementById('username').placeholder = 'Enter Doctor ID (e.g. DOC001) or Email';
+    if (patLink) patLink.style.display = 'none';
+    if (docLink) docLink.style.display = 'block';
+    if (adminNotice) adminNotice.style.display = 'none';
+  } else {
+    document.getElementById('username').placeholder = 'Enter Admin ID (e.g. ADM001)';
+    if (patLink) patLink.style.display = 'none';
+    if (docLink) docLink.style.display = 'none';
+    if (adminNotice) adminNotice.style.display = 'block';
+  }
+}
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const loginId = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const role = document.getElementById('role_field').value;
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ loginId, password, role })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast(data.error || 'Login failed. Please check your credentials.', 'error');
+      return;
+    }
+
+    saveUserAuthSession(data.token, data.user, true);
+
+    if (data.user.role === 'patient') {
+      window.location.href = `/profile.html?patientId=${data.user.patientId}`;
+    } else if (data.user.role === 'doctor') {
+      window.location.href = '/doctor.html';
+    } else if (data.user.role === 'admin') {
+      window.location.href = '/admin.html';
+    } else {
+      window.location.href = '/dashboard.html';
+    }
+
+  } catch (err) {
+    console.error("Login error:", err);
+    showToast(err.message || 'Failed to connect to authentication server.', 'error');
+  }
+});
+</script>
+
+</body>
+</html>

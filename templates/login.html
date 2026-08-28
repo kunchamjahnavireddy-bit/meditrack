@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - MediTrack System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-body">
+
+<div class="login-card">
+  <div class="login-header">
+    <div class="brand-logo" style="width:64px; height:64px; margin: 0 auto 1.25rem; font-size:2.2rem; border-radius:16px;">+</div>
+    <h1 class="login-title">MediTrack</h1>
+    <p style="color:var(--text-muted); font-size:1.05rem; margin-top:0.3rem; font-weight:500;">Integrated Patient Care Management System</p>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category if category != 'message' else 'info' }}" style="margin-bottom:1.5rem;">
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="role-tab-group">
+    <div class="role-tab active" onclick="selectRole('staff', 'staff', 'staff123')">Staff / Admin</div>
+    <div class="role-tab" onclick="selectRole('doctor', 'drpriya', 'doc123')">Doctor</div>
+    <div class="role-tab" onclick="selectRole('patient', 'rahul', 'patient123')">Patient</div>
+  </div>
+
+  <form action="{{ url_for('login') }}" method="POST">
+    <input type="hidden" name="role" id="role_field" value="staff">
+
+    <div class="form-group">
+      <label class="form-label" for="username">Username</label>
+      <input type="text" id="username" name="username" class="form-control" value="staff" required placeholder="Enter username">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="password">Password</label>
+      <input type="password" id="password" name="password" class="form-control" value="staff123" required placeholder="Enter password">
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1.25rem; min-height:52px; font-size:1.1rem;">
+      Log In to MediTrack ➔
+    </button>
+  </form>
+
+  <div style="margin-top:2rem; text-align:center; background:#f8fafc; padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+    <p style="font-size:0.9rem; color:var(--text-muted); font-weight:700;">Sample Demo Credentials:</p>
+    <div style="font-size:0.9rem; color:var(--text-main); margin-top:0.35rem;">
+      Staff: <code>staff / staff123</code> | Doctor: <code>drpriya / doc123</code> | Patient: <code>rahul / patient123</code>
+    </div>
+  </div>
+</div>
+
+<script>
+function selectRole(role, defaultUser, defaultPass) {
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('role_field').value = role;
+  document.getElementById('username').value = defaultUser;
+  document.getElementById('password').value = defaultPass;
+}
+</script>
+
+</body>
+</html>

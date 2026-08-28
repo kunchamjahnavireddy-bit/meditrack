@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Profile - {{ patient.patient_id }}{% endblock %}
+{% block page_title %}Patient Profile Management{% endblock %}
+{% block page_subtitle %}Comprehensive medical history & emergency contact management for {{ patient.full_name }}{% endblock %}
+
+{% block content %}
+
+<!-- Header Summary Card -->
+<div class="card" style="background: linear-gradient(135deg, #ffffff, #f0f9ff); border-color:#bae6fd; padding:2rem;">
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
+    <div style="display:flex; align-items:center; gap:1.5rem;">
+      <div style="width:72px; height:72px; background-color:var(--primary); color:white; border-radius:var(--radius-full); display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:800; flex-shrink:0; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
+        {{ patient.full_name[0] | upper }}
+      </div>
+      <div>
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <h2 style="font-size: clamp(1.6rem, 2.5vw, 2rem); font-weight:800; color:var(--text-main);">{{ patient.full_name }}</h2>
+          <span class="badge badge-blue" style="font-size:1rem; padding:0.4rem 1rem;">{{ patient.patient_id }}</span>
+        </div>
+        <div style="font-size:1.05rem; color:var(--text-muted); margin-top:0.35rem; font-weight:600;">
+          {{ patient.age }} yrs • {{ patient.gender }} • Date of Birth: {{ patient.date_of_birth }}
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+      <a href="{{ url_for('appointments') }}?patient_id={{ patient.patient_id }}" class="btn btn-success" style="min-height:50px; padding:0.8rem 1.6rem; font-size:1.05rem;">
+        📅 Book Appointment
+      </a>
+      <a href="{{ url_for('search') }}?q={{ patient.patient_id }}" class="btn btn-secondary" style="min-height:50px; padding:0.8rem 1.6rem; font-size:1.05rem;">
+        🔍 Full Record View
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Details Form -->
+<form action="{{ url_for('patient_profile', patient_id=patient.patient_id) }}" method="POST">
+  <div class="profile-grid">
+
+    <!-- Section 1: Personal Information (Read-Only Summary) -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">👤 Personal Information</h3>
+        <span class="badge badge-blue">Demographics</span>
+      </div>
+
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1.75rem;">
+        <div class="field-pair">
+          <span class="field-label">Patient ID</span>
+          <span class="field-value" style="font-weight:800; color:var(--primary); font-size:1.25rem;">{{ patient.patient_id }}</span>
+        </div>
+
+        <div class="field-pair">
+          <span class="field-label">Full Name</span>
+          <span class="field-value">{{ patient.full_name }}</span>
+        </div>
+
+        <div class="field-pair">
+          <span class="field-label">Age & Gender</span>
+          <span class="field-value">{{ patient.age }} Years / {{ patient.gender }}</span>
+        </div>
+
+        <div class="field-pair">
+          <span class="field-label">Date of Birth</span>
+          <span class="field-value">{{ patient.date_of_birth }}</span>
+        </div>
+
+        <div class="field-pair">
+          <span class="field-label">Phone Number</span>
+          <span class="field-value">{{ patient.phone }}</span>
+        </div>
+
+        <div class="field-pair">
+          <span class="field-label">Email Address</span>
+          <span class="field-value">{{ patient.email }}</span>
+        </div>
+
+        <div class="field-pair" style="grid-column: 1 / -1;">
+          <span class="field-label">Residential Address</span>
+          <span class="field-value">{{ patient.address }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Medical Profile Information (Editable) -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">🩺 Medical Information</h3>
+        <span class="badge badge-green">Editable Medical Record</span>
+      </div>
+
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1.5rem;">
+        <!-- Blood Group -->
+        <div class="form-group">
+          <label class="form-label" for="blood_group">Blood Group</label>
+          <select id="blood_group" name="blood_group" class="form-control">
+            <option value="Not Specified" {% if profile and profile.blood_group == 'Not Specified' %}selected{% endif %}>Select Blood Group</option>
+            <option value="A+" {% if profile and profile.blood_group == 'A+' %}selected{% endif %}>A+</option>
+            <option value="A-" {% if profile and profile.blood_group == 'A-' %}selected{% endif %}>A-</option>
+            <option value="B+" {% if profile and profile.blood_group == 'B+' %}selected{% endif %}>B+</option>
+            <option value="B-" {% if profile and profile.blood_group == 'B-' %}selected{% endif %}>B-</option>
+            <option value="AB+" {% if profile and profile.blood_group == 'AB+' %}selected{% endif %}>AB+</option>
+            <option value="AB-" {% if profile and profile.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
+            <option value="O+" {% if profile and profile.blood_group == 'O+' %}selected{% endif %}>O+</option>
+            <option value="O-" {% if profile and profile.blood_group == 'O-' %}selected{% endif %}>O-</option>
+          </select>
+        </div>
+
+        <!-- Insurance Details -->
+        <div class="form-group">
+          <label class="form-label" for="insurance_details">Insurance Policy Details</label>
+          <input type="text" id="insurance_details" name="insurance_details" class="form-control" value="{{ profile.insurance_details if profile else '' }}" placeholder="Policy #, Provider...">
+        </div>
+
+        <!-- Allergies -->
+        <div class="form-group full-width">
+          <label class="form-label" for="allergies">Known Allergies</label>
+          <input type="text" id="allergies" name="allergies" class="form-control" value="{{ profile.allergies if profile else '' }}" placeholder="e.g. Dust, Penicillin, Peanuts (or None)">
+        </div>
+
+        <!-- Existing Diseases -->
+        <div class="form-group full-width">
+          <label class="form-label" for="existing_diseases">Existing Chronic Diseases</label>
+          <input type="text" id="existing_diseases" name="existing_diseases" class="form-control" value="{{ profile.existing_diseases if profile else '' }}" placeholder="e.g. Diabetes, Hypertension, Asthma">
+        </div>
+
+        <!-- Previous Medical History -->
+        <div class="form-group full-width">
+          <label class="form-label" for="medical_history">Previous Medical History</label>
+          <textarea id="medical_history" name="medical_history" class="form-control" rows="3" placeholder="Surgeries, past hospitalizations, chronic conditions...">{{ profile.medical_history if profile else '' }}</textarea>
+        </div>
+
+        <!-- Current Medications -->
+        <div class="form-group full-width">
+          <label class="form-label" for="current_medications">Current Medications</label>
+          <textarea id="current_medications" name="current_medications" class="form-control" rows="3" placeholder="Daily prescribed medications and dosage...">{{ profile.current_medications if profile else '' }}</textarea>
+        </div>
+
+        <!-- Emergency Contact Name -->
+        <div class="form-group">
+          <label class="form-label" for="emergency_name">Emergency Contact Name</label>
+          <input type="text" id="emergency_name" name="emergency_name" class="form-control" value="{{ profile.emergency_name if profile else '' }}" placeholder="Relative/Friend Name">
+        </div>
+
+        <!-- Emergency Contact Phone -->
+        <div class="form-group">
+          <label class="form-label" for="emergency_phone">Emergency Contact Phone</label>
+          <input type="tel" id="emergency_phone" name="emergency_phone" class="form-control" value="{{ profile.emergency_phone if profile else '' }}" placeholder="+91 98000 00000">
+        </div>
+
+      </div>
+
+      <div style="margin-top:2rem; text-align:right; border-top:1px solid var(--border-color); padding-top:1.5rem;">
+        <button type="submit" class="btn btn-primary" style="min-height:52px; padding:0.8rem 2rem; font-size:1.1rem;">
+          💾 Save & Update Medical Profile
+        </button>
+      </div>
+    </div>
+
+  </div>
+</form>
+
+{% endblock %}

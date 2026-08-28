@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MediTrack{% endblock %} - Patient Care Management</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <div class="brand-logo">+</div>
+      <div>
+        <div class="brand-title">MediTrack</div>
+        <div class="brand-subtitle">Patient Care System</div>
+      </div>
+    </div>
+
+    {% if session.get('user') %}
+    <div class="user-badge">
+      <div class="user-avatar">{{ session['user']['full_name'][0] | upper }}</div>
+      <div class="user-info">
+        <div class="user-name">{{ session['user']['full_name'] }}</div>
+        <div class="user-role">{{ session['user']['role'] }}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <ul class="nav-menu">
+      <li class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+        <a href="{{ url_for('dashboard') }}">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+      </li>
+
+      {% if session.get('user') and session['user']['role'] in ['staff', 'patient'] %}
+      <li class="nav-item {% if active_page == 'register' %}active{% endif %}">
+        <a href="{{ url_for('register') }}">
+          <span class="nav-icon">👤</span>
+          <span>Register Patient</span>
+        </a>
+      </li>
+      {% endif %}
+
+      <li class="nav-item {% if active_page == 'search' %}active{% endif %}">
+        <a href="{{ url_for('search') }}">
+          <span class="nav-icon">🔍</span>
+          <span>Search Patients</span>
+        </a>
+      </li>
+
+      <li class="nav-item {% if active_page == 'appointments' %}active{% endif %}">
+        <a href="{{ url_for('appointments') }}">
+          <span class="nav-icon">📅</span>
+          <span>Appointments</span>
+        </a>
+      </li>
+
+      {% if session.get('user') and session['user']['role'] in ['staff', 'doctor'] %}
+      <li class="nav-item {% if active_page == 'doctor' %}active{% endif %}">
+        <a href="{{ url_for('doctor_view') }}">
+          <span class="nav-icon">🩺</span>
+          <span>Doctor View</span>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+
+    <div class="nav-footer">
+      {% if session.get('user') %}
+      <a href="{{ url_for('logout') }}" class="btn-logout">
+        <span>Logout</span> 🚪
+      </a>
+      {% else %}
+      <a href="{{ url_for('login') }}" class="btn-logout" style="background-color:rgba(14,165,233,0.2); color:#38bdf8; border-color:rgba(14,165,233,0.3);">
+        <span>Login</span> 🔑
+      </a>
+      {% endif %}
+    </div>
+  </aside>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div>
+        <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+        <p class="page-description">{% block page_subtitle %}Integrated Patient Care Management System{% endblock %}</p>
+      </div>
+      <div class="current-date">
+        📅 {{ current_date_display }}
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category if category != 'message' else 'info' }}">
+              {% if category == 'success' %}✅{% elif category == 'error' %}⚠️{% else %}ℹ️{% endif %}
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

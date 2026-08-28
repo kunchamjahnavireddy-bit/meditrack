@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prescriptions - MediTrack Care System</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <div class="brand-logo">+</div>
+      <div>
+        <div class="brand-title">MediTrack</div>
+        <div class="brand-subtitle">Patient Care System</div>
+      </div>
+    </div>
+
+    <div id="user-badge-container" class="user-badge"></div>
+
+    <ul class="nav-menu">
+      <!-- Loaded dynamically by app.js based on User Role -->
+    </ul>
+
+    <div class="nav-footer">
+      <a href="#" onclick="logoutUser()" class="btn-logout"><span>Logout</span> 🚪</a>
+    </div>
+  </aside>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div>
+        <h1 id="prescription-page-title" class="page-title">Prescriptions View</h1>
+        <p id="prescription-page-sub" class="page-description">Prescription records & prescribed medication history</p>
+      </div>
+      <div id="current-date-display" class="current-date"></div>
+    </header>
+
+    <div class="content-body">
+      <div id="flash-messages-container"></div>
+      <div id="receptionist-prescription-notice" style="display:none;"></div>
+
+      <!-- Search Bar -->
+      <div class="card" style="margin-bottom:2rem; padding:1.5rem 2rem;">
+        <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+          <div style="flex-grow:1; position:relative;">
+            <input type="text" id="prescription-search-input" class="form-control" placeholder="🔍 Search by Patient ID (e.g. PAT001), Patient Name, or Doctor..." style="min-height:50px; font-size:1.05rem;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctor Create Prescription Form Card (Doctor Role Only) -->
+      <div id="doctor-prescription-form-card" class="card" style="display:none; border-color:var(--primary); background:linear-gradient(135deg, #ffffff, #f0f9ff);">
+        <div class="card-header">
+          <h2 class="card-title">✍️ Issue New Patient Prescription</h2>
+          <span class="badge badge-blue">Doctor Consultation Tool</span>
+        </div>
+
+        <form id="doctor-prescription-form">
+          <div class="form-grid">
+
+            <!-- Select Patient -->
+            <div class="form-group full-width">
+              <label class="form-label" for="rx_patient_id">1. Select Patient <span class="required">*</span></label>
+              <select id="rx_patient_id" class="form-control" required>
+                <option value="">-- Choose Registered Patient --</option>
+              </select>
+            </div>
+
+            <!-- Medicine Name -->
+            <div class="form-group">
+              <label class="form-label" for="medicine_name">2. Medicine Name <span class="required">*</span></label>
+              <input type="text" id="medicine_name" class="form-control" required placeholder="e.g. Paracetamol, Amoxicillin">
+            </div>
+
+            <!-- Dosage -->
+            <div class="form-group">
+              <label class="form-label" for="dosage">3. Dosage <span class="required">*</span></label>
+              <input type="text" id="dosage" class="form-control" required placeholder="e.g. 500 mg, 10 ml">
+            </div>
+
+            <!-- Frequency -->
+            <div class="form-group">
+              <label class="form-label" for="frequency">4. Frequency <span class="required">*</span></label>
+              <input type="text" id="frequency" class="form-control" required placeholder="e.g. Twice a day, Once daily">
+            </div>
+
+            <!-- Duration -->
+            <div class="form-group">
+              <label class="form-label" for="duration">5. Duration <span class="required">*</span></label>
+              <input type="text" id="duration" class="form-control" required placeholder="e.g. 5 days, 2 weeks">
+            </div>
+
+            <!-- Instructions -->
+            <div class="form-group full-width">
+              <label class="form-label" for="instructions">6. Instructions & Usage Notes</label>
+              <input type="text" id="instructions" class="form-control" placeholder="e.g. Take after meals with lukewarm water">
+            </div>
+
+          </div>
+
+          <div style="margin-top:1.5rem; text-align:right; border-top:1px solid var(--border-color); padding-top:1.25rem;">
+            <button type="submit" class="btn btn-primary" style="min-height:50px; padding:0.8rem 2rem; font-size:1.05rem;">
+              💊 Issue Prescription to Patient ➔
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Prescriptions Catalog List -->
+      <div id="prescriptions-list-container">
+        <p>Loading prescription history...</p>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/prescriptions.js"></script>
+</body>
+</html>

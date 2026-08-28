@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointments - MediTrack</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <div class="brand-logo">+</div>
+      <div>
+        <div class="brand-title">MediTrack</div>
+        <div class="brand-subtitle">Patient Care System</div>
+      </div>
+    </div>
+
+    <div id="user-badge-container" class="user-badge"></div>
+
+    <ul class="nav-menu">
+      <li class="nav-item"><a href="/dashboard.html"><span class="nav-icon">📊</span><span>Dashboard</span></a></li>
+      <li class="nav-item"><a href="/register.html"><span class="nav-icon">👤</span><span>Register Patient</span></a></li>
+      <li class="nav-item"><a href="/search.html"><span class="nav-icon">🔍</span><span>Search Patients</span></a></li>
+      <li class="nav-item active"><a href="/appointments.html"><span class="nav-icon">📅</span><span>Appointments</span></a></li>
+      <li class="nav-item"><a href="/doctor.html"><span class="nav-icon">🩺</span><span>Doctor View</span></a></li>
+    </ul>
+
+    <div class="nav-footer">
+      <a href="#" onclick="logoutUser()" class="btn-logout"><span>Logout</span> 🚪</a>
+    </div>
+  </aside>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div>
+        <h1 class="page-title">Appointment Scheduling Module</h1>
+        <p class="page-description">Book doctor consultations with real-time slot availability & duplicate booking prevention</p>
+      </div>
+      <div id="current-date-display" class="current-date"></div>
+    </header>
+
+    <div class="content-body">
+      <div id="flash-messages-container"></div>
+
+      <div class="profile-grid">
+
+        <!-- Booking Form Card -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">📅 Schedule Consultation</h2>
+            <span class="badge badge-blue">Step-by-Step Booking</span>
+          </div>
+
+          <form id="appointment-booking-form">
+
+            <!-- Step 1: Select Patient -->
+            <div class="form-group">
+              <label class="form-label" for="patient_id">1. Select Patient <span class="required">*</span></label>
+              <select id="patient_id" class="form-control" required>
+                <option value="">-- Loading Registered Patients... --</option>
+              </select>
+            </div>
+
+            <!-- Step 2: Select Doctor -->
+            <div class="form-group">
+              <label class="form-label" for="doctor_id">2. Select Doctor <span class="required">*</span></label>
+              <select id="doctor_id" class="form-control" required>
+                <option value="">-- Loading Doctors... --</option>
+              </select>
+            </div>
+
+            <!-- Step 3: Select Date -->
+            <div class="form-group">
+              <label class="form-label" for="appointment_date">3. Select Appointment Date <span class="required">*</span></label>
+              <input type="date" id="appointment_date" class="form-control" required>
+            </div>
+
+            <!-- Step 4: Available Time Slot Selector -->
+            <div class="form-group">
+              <label class="form-label">4. Select Available Time Slot <span class="required">*</span></label>
+              <input type="hidden" id="appointment_time" name="appointment_time" required>
+              
+              <div id="slot-notice" class="alert alert-info" style="display:none;"></div>
+
+              <div id="slot-grid-container" class="slot-grid">
+                <p class="text-muted" style="font-size:1rem; font-weight:500;">Select a Doctor and Date above to load real-time slot availability.</p>
+              </div>
+            </div>
+
+            <!-- Consultation Reason -->
+            <div class="form-group" style="margin-top:1.5rem;">
+              <label class="form-label" for="reason">Reason for Visit</label>
+              <input type="text" id="reason" class="form-control" placeholder="e.g. Regular Checkup, Fever, Consultation...">
+            </div>
+
+            <div style="margin-top:2rem; text-align:right; border-top:1px solid var(--border-color); padding-top:1.5rem;">
+              <button type="submit" class="btn btn-primary" style="min-height:52px; padding:0.8rem 2rem; font-size:1.1rem;">
+                Confirm & Book Appointment ➔
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Appointments List View -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">📋 Scheduled Appointments Agenda</h2>
+            <span class="badge badge-green">Live Schedule</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Patient</th>
+                  <th>Doctor</th>
+                  <th>Date & Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="appointments-table-body">
+                <tr><td colspan="5" style="text-align:center; padding:2rem;">Loading appointments agenda...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/appointments.js"></script>
+</body>
+</html>
