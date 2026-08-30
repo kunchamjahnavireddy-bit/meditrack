@@ -622,14 +622,15 @@ function renderDoctorBookingCard(doc, isMatch) {
   return `
     <div class="doctor-select-card" id="doc-card-${doc.doctorId}" onclick="selectDoctorForBooking('${doc.doctorId}')" style="background:#fff; border:2px solid ${isMatch ? '#0284c7' : 'var(--border-color)'}; border-radius:14px; padding:1.25rem; cursor:pointer; transition:var(--transition); position:relative;">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
-        <div style="font-size:1.8rem;">🩺</div>
+        <span class="badge badge-blue" style="font-size:0.75rem; font-weight:700;">ID: ${doc.doctorId}</span>
         <span class="badge ${isMatch ? 'badge-green' : 'badge-blue'}" style="font-size:0.8rem;">
-          📍 Location: ${loc}
+          📍 ${loc}
         </span>
       </div>
-      <div style="font-size:1.1rem; font-weight:800; color:var(--text-main);">${doc.name}</div>
-      <div style="font-size:0.9rem; color:var(--primary); font-weight:700;">${doc.specialty}</div>
-      <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.35rem;">Dept: ${doc.department}</div>
+      <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:0.25rem;">${doc.name}</div>
+      <div style="font-size:0.9rem; color:var(--primary); font-weight:700;">🩺 ${doc.specialty || doc.department || 'Specialist'}</div>
+      <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem;">Dept: ${doc.department || 'General Medicine'}</div>
+      <div style="font-size:0.82rem; color:var(--text-muted); margin-top:0.25rem;">🕒 Available: Mon - Sat (09:00 AM - 04:00 PM)</div>
       <button type="button" class="btn btn-secondary" style="min-height:36px; width:100%; margin-top:0.85rem; font-size:0.875rem;">
         Select Doctor
       </button>

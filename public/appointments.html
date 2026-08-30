@@ -48,10 +48,27 @@
     <div class="content-body">
       <div id="flash-messages-container"></div>
 
+      <!-- ALL Available Registered Doctors Card Section -->
+      <div class="card full-width" style="margin-bottom: 2rem; width: 100%;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <h2 class="card-title">🩺 All Available Hospital Doctors</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">
+              Browse all registered physicians from MongoDB Atlas. Click any doctor to select for consultation booking.
+            </p>
+          </div>
+          <span id="all-doctors-count-tag" class="badge badge-blue">Loading Doctors...</span>
+        </div>
+
+        <div id="all-doctors-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 1rem;">
+          <p class="text-muted" style="padding:1rem;">Fetching doctors from database...</p>
+        </div>
+      </div>
+
       <div class="profile-grid">
 
         <!-- Booking Form Card -->
-        <div class="card">
+        <div class="card" id="booking-form-card">
           <div class="card-header">
             <h2 class="card-title">📅 Schedule Consultation</h2>
             <span class="badge badge-blue">Step-by-Step Booking</span>

@@ -12,6 +12,71 @@ document.addEventListener('DOMContentLoaded', () => {
   initAppointmentBookingHandler();
 });
 
+function getDoctorImage(specialty) {
+  const spec = (specialty || '').toLowerCase();
+  if (spec.includes('cardio')) return '/images/meditrack_doc_cardiologist.jpg';
+  if (spec.includes('pulmon')) return '/images/meditrack_doc_pulmonologist.jpg';
+  if (spec.includes('neuro')) return '/images/meditrack_doc_neurologist.jpg';
+  if (spec.includes('ortho')) return '/images/meditrack_doc_orthopedist.jpg';
+  if (spec.includes('pediat')) return '/images/meditrack_doc_pediatrician.jpg';
+  return '/images/meditrack_hero_physician.jpg';
+}
+
+function renderAllDoctorsGrid(doctors) {
+  const grid = document.getElementById('all-doctors-grid');
+  const countTag = document.getElementById('all-doctors-count-tag');
+  if (!grid) return;
+
+  if (!doctors || doctors.length === 0) {
+    grid.innerHTML = `<p class="text-muted" style="padding:1rem;">No registered doctors found in MongoDB database.</p>`;
+    if (countTag) countTag.textContent = '0 Doctors';
+    return;
+  }
+
+  if (countTag) countTag.textContent = `${doctors.length} Registered Doctor${doctors.length === 1 ? '' : 's'}`;
+
+  grid.innerHTML = doctors.map(doc => {
+    const imgUrl = getDoctorImage(doc.specialty || doc.department);
+    return `
+      <div class="card" style="margin-bottom:0; background:#ffffff; border:1px solid var(--border-color); border-radius:18px; padding:1.25rem; box-shadow:var(--shadow-subtle); display:flex; flex-direction:column; justify-content:space-between; transition:all 0.25s ease;">
+        <div>
+          <div style="display:flex; align-items:center; gap:1rem; margin-bottom:0.85rem;">
+            <img src="${imgUrl}" alt="${doc.name}" style="width:68px; height:68px; border-radius:14px; object-fit:cover; border:2px solid #e2e8f0; background:#f1f5f9; flex-shrink:0;">
+            <div>
+              <span class="badge badge-blue" style="font-size:0.75rem; padding:0.2rem 0.6rem; margin-bottom:0.25rem; display:inline-block; font-weight:700;">ID: ${doc.doctorId}</span>
+              <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-heading); margin:0 0 0.15rem 0;">${doc.name}</h3>
+              <span style="font-size:0.85rem; color:var(--primary); font-weight:700;">🩺 ${doc.specialty || doc.department || 'Specialist'}</span>
+            </div>
+          </div>
+
+          <div style="font-size:0.88rem; color:var(--text-body); line-height:1.55; margin-bottom:1.1rem; padding:0.75rem; background:#f8fafc; border-radius:12px; border:1px solid #f1f5f9;">
+            <div style="margin-bottom:0.25rem;">📍 <strong>Location:</strong> ${doc.location || 'Hospital Network'}</div>
+            <div style="margin-bottom:0.25rem;">📜 <strong>License / Dept:</strong> ${doc.medicalLicenseNumber || doc.department || 'MCI Verified'}</div>
+            <div>🕒 <strong>Available Slots:</strong> Mon - Sat (09:00 AM - 04:00 PM)</div>
+          </div>
+        </div>
+
+        <button type="button" onclick="selectDoctorForBooking('${doc.doctorId}')" class="btn btn-secondary" style="width:100%; min-height:42px; font-size:0.92rem; font-weight:700; background:#e0f2fe; color:#0369a1; border-color:#7dd3fc;">
+          📅 Select & Book Consultation
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectDoctorForBooking(doctorId) {
+  const docSelect = document.getElementById('doctor_id');
+  if (docSelect) {
+    docSelect.value = doctorId;
+    docSelect.dispatchEvent(new Event('change'));
+
+    const bookingCard = document.getElementById('booking-form-card');
+    if (bookingCard) {
+      bookingCard.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+}
+
 async function loadDropdownData() {
   try {
     const resPat = await fetchWithAuth('/api/patients');
@@ -33,9 +98,10 @@ async function loadDropdownData() {
       if (docSelect && Array.isArray(doctors)) {
         docSelect.innerHTML = '<option value="">-- Choose Doctor --</option>';
         doctors.forEach(doc => {
-          docSelect.innerHTML += `<option value="${doc.doctorId}">${doc.name} (${doc.specialty})</option>`;
+          docSelect.innerHTML += `<option value="${doc.doctorId}">${doc.name} (${doc.specialty || doc.department}) - ${doc.location || 'Hospital'}</option>`;
         });
       }
+      renderAllDoctorsGrid(doctors);
     }
   } catch (err) {
     console.error('Error loading dropdown data:', err);
