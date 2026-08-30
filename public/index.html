@@ -232,27 +232,95 @@
       margin-bottom: 1.25rem;
     }
 
-    /* Doctor Card Styling */
-    .doctor-card {
-      background: var(--bg-white);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: var(--shadow-subtle);
-      transition: all 0.3s ease;
-      text-align: center;
+    /* Doctor List Item Layout */
+    .doctor-list-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
     }
-    .doctor-card:hover {
-      transform: translateY(-5px);
+    .doctor-list-row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.25s ease;
+    }
+    .doctor-list-row:hover {
+      transform: translateY(-2px);
       box-shadow: var(--shadow-hover);
       border-color: #bae6fd;
     }
-    .doctor-img {
+    .doctor-list-thumb {
+      width: 110px;
+      height: 110px;
+      flex-shrink: 0;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid #e2e8f0;
+      background: #f1f5f9;
+    }
+    .doctor-list-thumb img {
       width: 100%;
-      height: 250px;
+      height: 100%;
       object-fit: cover;
+    }
+    .doctor-list-details {
+      flex: 1;
+    }
+    .doctor-dept-pill {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      margin-bottom: 0.35rem;
+    }
+    .doctor-list-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      margin: 0 0 0.15rem 0;
+    }
+    .doctor-list-sub {
+      font-size: 0.85rem;
+      color: var(--primary-blue);
+      font-weight: 600;
       display: block;
-      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 0.35rem;
+    }
+    .doctor-list-bio {
+      font-size: 0.92rem;
+      color: var(--text-body);
+      margin: 0;
+      line-height: 1.5;
+    }
+    .doctor-list-action {
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .doctor-list-row {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+      }
+      .doctor-list-thumb {
+        width: 100px;
+        height: 100px;
+      }
+      .doctor-list-action {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
     }
 
     /* Contact Form Layout */
@@ -467,58 +535,255 @@
   </div>
 </section>
 
-<!-- Departments & Doctors Section -->
+<!-- Departments & Our Doctors Section -->
 <section id="departments-section" class="section-block" style="background:#ffffff; border-bottom:1px solid var(--border-color);">
   <div class="section-container">
     <div class="section-header">
-      <span class="section-tag">Specialized Care</span>
+      <span class="section-tag">Specialized Departments & Verified Physicians</span>
       <h2 class="section-title">Departments & Our Doctors</h2>
-      <p class="section-sub">Qualified medical specialists providing expert care across hospital departments</p>
+      <p class="section-sub">Browse our organized directory of qualified medical specialists across 15 hospital departments</p>
     </div>
 
-    <div id="doctors-section" class="card-grid-3" style="grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));">
+    <!-- 15 Departments Compact Doctor List -->
+    <div id="doctors-section" class="doctor-list-wrap">
       
       <!-- Doctor 1: Cardiology -->
-      <div class="doctor-card">
-        <img src="/images/meditrack_doc_cardiologist.jpg" alt="Dr. Rajesh Kumar" class="doctor-img" />
-        <div style="padding:1.5rem;">
-          <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">Cardiology Dept</h3>
-          <p style="font-size:0.98rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Rajesh Kumar (DOC001)</p>
-          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">Senior Consultant • License: MCI-88992</span>
-          <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_cardiologist.jpg" alt="Dr. Rajesh Kumar" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🫀 Cardiology Dept</span>
+          <h3 class="doctor-list-title">Dr. Rajesh Kumar</h3>
+          <span class="doctor-list-sub">Senior Consultant • License: MCI-88992</span>
+          <p class="doctor-desc">Specializes in cardiovascular health, heart disease prevention, coronary interventions, and hypertension management.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
         </div>
       </div>
 
-      <!-- Doctor 2: General Medicine -->
-      <div class="doctor-card">
-        <img src="/images/meditrack_doc_physician.jpg" alt="Dr. Sunita Rao" class="doctor-img" />
-        <div style="padding:1.5rem;">
-          <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">General Medicine</h3>
-          <p style="font-size:0.98rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Sunita Rao (DOC002)</p>
-          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">Senior Physician • License: MCI-77114</span>
-          <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
+      <!-- Doctor 2: Pulmonology -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_pulmonologist.jpg" alt="Dr. Priya Sharma" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🫁 Pulmonology Dept</span>
+          <h3 class="doctor-list-title">Dr. Priya Sharma</h3>
+          <span class="doctor-list-sub">Pulmonary Specialist • License: MCI-99411</span>
+          <p class="doctor-desc">Expert in respiratory care, asthma management, COPD, pulmonary fibrosis, and interventional lung diagnostics.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
         </div>
       </div>
 
-      <!-- Doctor 3: Pediatrics -->
-      <div class="doctor-card">
-        <img src="/images/meditrack_doc_pediatrician.jpg" alt="Dr. Ananya Reddy" class="doctor-img" />
-        <div style="padding:1.5rem;">
-          <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">Pediatrics & Child Care</h3>
-          <p style="font-size:0.98rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Ananya Reddy (DOC003)</p>
-          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">Pediatric Specialist • License: MCI-66231</span>
-          <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
+      <!-- Doctor 3: Neurology -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_neurologist.jpg" alt="Dr. Suresh Menon" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🧠 Neurology Dept</span>
+          <h3 class="doctor-list-title">Dr. Suresh Menon</h3>
+          <span class="doctor-list-sub">Senior Neurologist • License: MCI-77823</span>
+          <p class="doctor-desc">Specialist in stroke care, epilepsy, Parkinson's disease, neuropathy, and central nervous system disorders.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
         </div>
       </div>
 
       <!-- Doctor 4: Orthopedics -->
-      <div class="doctor-card">
-        <img src="/images/meditrack_doc_orthopedist.jpg" alt="Dr. Vikram Verma" class="doctor-img" />
-        <div style="padding:1.5rem;">
-          <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">Orthopedics & Joint Care</h3>
-          <p style="font-size:0.98rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Vikram Verma (DOC004)</p>
-          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">Orthopedic Surgeon • License: MCI-55412</span>
-          <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_orthopedist.jpg" alt="Dr. Vikram Verma" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🦴 Orthopedics Dept</span>
+          <h3 class="doctor-list-title">Dr. Vikram Verma</h3>
+          <span class="doctor-list-sub">Orthopedic Surgeon • License: MCI-55412</span>
+          <p class="doctor-desc">Expert in joint replacement surgeries, sports trauma rehabilitation, arthritis care, and bone fracture repair.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 5: General Medicine -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_physician.jpg" alt="Dr. Sunita Rao" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🩺 General Medicine</span>
+          <h3 class="doctor-list-title">Dr. Sunita Rao</h3>
+          <span class="doctor-list-sub">Senior Physician • License: MCI-77114</span>
+          <p class="doctor-desc">Comprehensive internal medicine physician providing primary care, diabetes monitoring, and preventative health checks.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 6: Dermatology -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_physician.jpg" alt="Dr. Kavita Nair" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🧴 Dermatology Dept</span>
+          <h3 class="doctor-list-title">Dr. Kavita Nair</h3>
+          <span class="doctor-list-sub">Dermatologist & Cosmetic Specialist • License: MCI-66521</span>
+          <p class="doctor-desc">Specialist in clinical dermatology, skin allergy treatment, chronic psoriasis, acne management, and hair care.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 7: Pediatrics -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_pediatrician.jpg" alt="Dr. Ananya Reddy" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">👶 Pediatrics & Child Care</span>
+          <h3 class="doctor-list-title">Dr. Ananya Reddy</h3>
+          <span class="doctor-list-sub">Pediatric Specialist • License: MCI-66231</span>
+          <p class="doctor-desc">Compassionate pediatrician specializing in newborn healthcare, infant nutrition, childhood immunizations, and pediatric infections.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 8: Gynecology -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_pediatrician.jpg" alt="Dr. Meera Deshmukh" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">👩‍⚕️ Gynecology Dept</span>
+          <h3 class="doctor-list-title">Dr. Meera Deshmukh</h3>
+          <span class="doctor-list-sub">Gynecologist & Obstetrician • License: MCI-88102</span>
+          <p class="doctor-desc">Expert in maternal healthcare, prenatal care, high-risk pregnancy, laparoscopic surgery, and women's reproductive wellness.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 9: ENT -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_hero_physician.jpg" alt="Dr. Alok Tripathi" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">👂 ENT Department</span>
+          <h3 class="doctor-list-title">Dr. Alok Tripathi</h3>
+          <span class="doctor-list-sub">ENT Surgeon • License: MCI-44910</span>
+          <p class="doctor-desc">Specialist in endoscopic sinus surgery, hearing restoration, throat disorders, snoring treatment, and pediatric otolaryngology.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 10: Ophthalmology -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_physician.jpg" alt="Dr. Neha Kapoor" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">👁️ Ophthalmology Dept</span>
+          <h3 class="doctor-list-title">Dr. Neha Kapoor</h3>
+          <span class="doctor-list-sub">Ophthalmic Surgeon • License: MCI-33129</span>
+          <p class="doctor-desc">Expert in micro-incision cataract surgery, LASIK vision correction, glaucoma treatment, and diabetic eye care.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 11: Gastroenterology -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_neurologist.jpg" alt="Dr. Amit Patel" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🧪 Gastroenterology Dept</span>
+          <h3 class="doctor-list-title">Dr. Amit Patel</h3>
+          <span class="doctor-list-sub">Gastroenterologist • License: MCI-77340</span>
+          <p class="doctor-desc">Specializes in digestive health, liver diseases, therapeutic endoscopy, colonoscopy, and acid reflux management.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 12: Urology -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_cardiologist.jpg" alt="Dr. Deepak Joshi" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🩺 Urology Department</span>
+          <h3 class="doctor-list-title">Dr. Deepak Joshi</h3>
+          <span class="doctor-list-sub">Consultant Urologist • License: MCI-55901</span>
+          <p class="doctor-desc">Specialist in kidney stone laser treatment, prostate health, minimally invasive urological surgery, and urinary tract disorders.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 13: Psychiatry -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_pulmonologist.jpg" alt="Dr. Shalini Saxena" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🧠 Psychiatry & Mental Health</span>
+          <h3 class="doctor-list-title">Dr. Shalini Saxena</h3>
+          <span class="doctor-list-sub">Consultant Psychiatrist • License: MCI-66112</span>
+          <p class="doctor-desc">Expert in behavioral mental health, anxiety and depression counseling, stress management, and cognitive behavioral therapy.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 14: Oncology -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_orthopedist.jpg" alt="Dr. Ramesh Nambiar" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🎗️ Oncology Department</span>
+          <h3 class="doctor-list-title">Dr. Ramesh Nambiar</h3>
+          <span class="doctor-list-sub">Medical Oncologist • License: MCI-88334</span>
+          <p class="doctor-desc">Senior clinical oncologist specializing in targeted cancer therapies, chemotherapy, early tumor screening, and cancer care management.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
+        </div>
+      </div>
+
+      <!-- Doctor 15: Dentistry -->
+      <div class="doctor-list-row">
+        <div class="doctor-list-thumb">
+          <img src="/images/meditrack_doc_pediatrician.jpg" alt="Dr. Sneha Kulkarni" />
+        </div>
+        <div class="doctor-list-details">
+          <span class="doctor-dept-pill">🦷 Dentistry & Oral Surgery</span>
+          <h3 class="doctor-list-title">Dr. Sneha Kulkarni</h3>
+          <span class="doctor-list-sub">Dental Surgeon • License: DCI-12940</span>
+          <p class="doctor-desc">Dental surgeon providing comprehensive oral healthcare, root canal therapy, orthodontics, teeth whitening, and cosmetic procedures.</p>
+        </div>
+        <div class="doctor-list-action">
+          <a href="/register.html" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">Book Consultation</a>
         </div>
       </div>
 
