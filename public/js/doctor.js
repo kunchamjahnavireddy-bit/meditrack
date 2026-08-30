@@ -391,14 +391,23 @@ function renderEmergencyPatientInformationHtml(data) {
   if (reports.length > 0) {
     reports.forEach(r => {
       const fileTarget = (r.fileUrl && r.fileUrl !== '#') ? r.fileUrl : '#';
+      const fileName = r.fileName || (r.fileUrl ? r.fileUrl.split('/').pop() : 'Document');
+      const uploadDateStr = r.uploadedAt ? new Date(r.uploadedAt).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+
       reportsHtml += `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid #fca5a5; border-radius:8px; padding:0.75rem 1rem; margin-bottom:0.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid #fca5a5; border-radius:8px; padding:0.85rem 1rem; margin-bottom:0.65rem; flex-wrap:wrap; gap:0.5rem;">
           <div>
-            <strong style="color:var(--text-main); font-size:0.95rem;">${r.title}</strong>
-            <span class="badge badge-blue" style="font-size:0.75rem; margin-left:0.5rem;">${r.reportType}</span>
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.2rem;">
+              <strong style="color:var(--text-main); font-size:0.95rem;">${r.title}</strong>
+              <span class="badge badge-blue" style="font-size:0.75rem;">🏷️ ${r.reportType}</span>
+            </div>
+            <div style="font-size:0.82rem; color:var(--text-muted); display:flex; gap:1rem; flex-wrap:wrap;">
+              <span>📄 <strong>File Name:</strong> ${fileName}</span>
+              <span>📅 <strong>Uploaded:</strong> ${uploadDateStr}</span>
+            </div>
           </div>
           <button onclick="if('${fileTarget}' !== '#') { window.open('${fileTarget}', '_blank'); } else { showToast('Report file link unavailable', 'warning'); }" class="btn btn-secondary" style="min-height:32px; padding:0.25rem 0.65rem; font-size:0.8rem;">
-            [View Report]
+            📂 View Report
           </button>
         </div>
       `;
@@ -537,14 +546,23 @@ function renderUnifiedClinicalFile(data, container) {
   if (reports.length > 0) {
     reports.forEach(r => {
       const fileTarget = (r.fileUrl && r.fileUrl !== '#') ? r.fileUrl : '#';
+      const fileName = r.fileName || (r.fileUrl ? r.fileUrl.split('/').pop() : 'Document');
+      const uploadDateStr = r.uploadedAt ? new Date(r.uploadedAt).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+
       reportsHtml += `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid var(--border-color); border-radius:10px; padding:0.85rem 1.15rem; margin-bottom:0.65rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid var(--border-color); border-radius:10px; padding:0.95rem 1.25rem; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.75rem;">
           <div>
-            <strong style="color:var(--text-main);">${r.title}</strong>
-            <span class="badge badge-blue" style="font-size:0.8rem; margin-left:0.5rem;">${r.reportType}</span>
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+              <strong style="color:var(--text-main); font-size:1.05rem;">${r.title}</strong>
+              <span class="badge badge-blue" style="font-size:0.8rem;">🏷️ ${r.reportType}</span>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-muted); display:flex; gap:1.1rem; flex-wrap:wrap; margin-top:0.25rem;">
+              <span>📄 <strong>File Name:</strong> ${fileName}</span>
+              <span>📅 <strong>Uploaded:</strong> ${uploadDateStr}</span>
+            </div>
           </div>
           <button onclick="if('${fileTarget}' !== '#') { window.open('${fileTarget}', '_blank'); } else { showToast('Report file link unavailable', 'warning'); }" class="btn btn-secondary" style="min-height:36px; padding:0.3rem 0.75rem; font-size:0.85rem;">
-            📂 View File
+            📂 View Report
           </button>
         </div>
       `;

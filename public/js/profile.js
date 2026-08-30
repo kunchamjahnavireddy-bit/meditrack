@@ -151,15 +151,23 @@ async function fetchPatientMedicalReports() {
     let html = '';
     reports.forEach(r => {
       const fileTarget = (r.fileUrl && r.fileUrl !== '#') ? r.fileUrl : '#';
+      const fileName = r.fileName || (r.fileUrl ? r.fileUrl.split('/').pop() : 'Document');
+      const uploadDateStr = r.uploadedAt ? new Date(r.uploadedAt).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+
       html += `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid var(--border-color); border-radius:12px; padding:1rem 1.25rem; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.75rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid var(--border-color); border-radius:12px; padding:1.1rem 1.35rem; margin-bottom:0.85rem; flex-wrap:wrap; gap:0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
           <div>
-            <strong style="font-size:1.05rem; color:var(--text-main); display:block;">${r.title}</strong>
-            <span class="badge badge-blue" style="font-size:0.8rem; margin-top:0.25rem;">${r.reportType}</span>
-            <span style="font-size:0.85rem; color:var(--text-muted); margin-left:0.75rem;">Uploaded: ${new Date(r.uploadedAt).toLocaleDateString()}</span>
+            <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.25rem;">
+              <strong style="font-size:1.1rem; color:var(--text-main);">${r.title}</strong>
+              <span class="badge badge-blue" style="font-size:0.8rem;">🏷️ ${r.reportType}</span>
+            </div>
+            <div style="font-size:0.88rem; color:var(--text-muted); display:flex; gap:1.25rem; flex-wrap:wrap; margin-top:0.35rem;">
+              <span>📄 <strong>File Name:</strong> ${fileName}</span>
+              <span>📅 <strong>Uploaded:</strong> ${uploadDateStr}</span>
+            </div>
           </div>
-          <button onclick="if('${fileTarget}' !== '#') { window.open('${fileTarget}', '_blank'); } else { showToast('Report file link unavailable', 'warning'); }" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.85rem;">
-            📂 View File
+          <button onclick="if('${fileTarget}' !== '#') { window.open('${fileTarget}', '_blank'); } else { showToast('Report file link unavailable', 'warning'); }" class="btn btn-secondary" style="min-height:38px; padding:0.4rem 1rem; font-size:0.88rem;">
+            📂 View / Open Report
           </button>
         </div>
       `;

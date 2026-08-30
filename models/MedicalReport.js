@@ -24,6 +24,10 @@ const MedicalReportSchema = new mongoose.Schema({
     type: String,
     default: '#'
   },
+  fileName: {
+    type: String,
+    default: 'Document'
+  },
   uploadedAt: {
     type: Date,
     default: Date.now
