@@ -6,677 +6,233 @@
   <title>MediTrack - Integrated Patient Care Management System</title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
-  <style>
-    :root {
-      --primary-blue: #0284c7;
-      --primary-dark: #0369a1;
-      --bg-light: #f8fafc;
-      --card-bg: #ffffff;
-      --text-heading: #0f172a;
-      --text-body: #334155;
-      --text-muted-light: #64748b;
-      --border-light: #e2e8f0;
-      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 12px 30px -10px rgba(2, 132, 199, 0.15);
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background-color: var(--bg-light);
-      color: var(--text-body);
-      font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
-    }
-
-    /* Navigation Bar */
-    .landing-nav {
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-light);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      padding: 1rem 2rem;
-      box-shadow: var(--shadow-sm);
-    }
-    .nav-container {
-      max-width: 1320px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-    }
-    .nav-link-item {
-      color: var(--text-body);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: color 0.2s ease;
-    }
-    .nav-link-item:hover { color: var(--primary-blue); }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-    }
-
-    /* Mobile Hamburger Menu */
-    .mobile-menu-btn {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.8rem;
-      cursor: pointer;
-      color: var(--text-heading);
-    }
-    .mobile-drawer {
-      display: none;
-      flex-direction: column;
-      gap: 1rem;
-      background: #ffffff;
-      padding: 1.5rem;
-      border-bottom: 1px solid var(--border-light);
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* Hero Section */
-    .hero-section {
-      padding: 5rem 2rem;
-      background: linear-gradient(180deg, #e0f2fe 0%, #f8fafc 100%);
-      border-bottom: 1px solid var(--border-light);
-    }
-    .hero-container {
-      max-width: 1280px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 3.5rem;
-      align-items: center;
-    }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: #e0f2fe;
-      border: 1px solid #bae6fd;
-      padding: 0.45rem 1.15rem;
-      border-radius: 9999px;
-      color: #0369a1;
-      font-weight: 700;
-      font-size: 0.9rem;
-      margin-bottom: 1.25rem;
-    }
-    .hero-heading {
-      font-size: clamp(38px, 4.5vw, 56px);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-      color: var(--text-heading);
-      margin-bottom: 1.25rem;
-    }
-    .hero-heading span { color: var(--primary-blue); }
-    .hero-desc {
-      font-size: 1.15rem;
-      color: var(--text-body);
-      line-height: 1.65;
-      margin-bottom: 2rem;
-      max-width: 620px;
-    }
-    .hero-ctas {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .hero-img-card {
-      position: relative;
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: var(--shadow-md);
-      border: 6px solid #ffffff;
-    }
-    .hero-img-card img {
-      width: 100%;
-      height: auto;
-      display: block;
-      object-fit: cover;
-    }
-
-    /* Section Styling */
-    .section-padding { padding: 5rem 2rem; }
-    .section-container { max-width: 1280px; margin: 0 auto; }
-    .section-header { text-align: center; margin-bottom: 3.5rem; }
-    .section-tag {
-      color: var(--primary-blue);
-      font-weight: 800;
-      font-size: 0.88rem;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      display: block;
-      margin-bottom: 0.4rem;
-    }
-    .section-title {
-      font-size: clamp(28px, 3vw, 38px);
-      font-weight: 800;
-      color: var(--text-heading);
-      margin: 0 0 0.5rem 0;
-    }
-    .section-sub {
-      font-size: 1.1rem;
-      color: var(--text-muted-light);
-      margin: 0;
-    }
-
-    /* Cards Grid */
-    .card-grid-3 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2rem;
-    }
-    .service-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-light);
-      border-radius: 20px;
-      padding: 2rem;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.3s ease;
-    }
-    .service-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-md);
-      border-color: #bae6fd;
-    }
-    .icon-box {
-      width: 56px;
-      height: 56px;
-      background: #e0f2fe;
-      color: var(--primary-blue);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      margin-bottom: 1.25rem;
-    }
-
-    /* Contact Form */
-    .contact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 3rem;
-      align-items: flex-start;
-    }
-
-    /* Responsive Queries */
-    @media (max-width: 992px) {
-      .hero-container { grid-template-columns: 1fr; text-align: center; }
-      .hero-desc { margin-left: auto; margin-right: auto; }
-      .hero-ctas { justify-content: center; }
-      .nav-links { display: none; }
-      .mobile-menu-btn { display: block; }
-      .contact-grid { grid-template-columns: 1fr; }
-    }
-  </style>
 </head>
-<body>
+<body style="background-color:#0f172a; color:#fff; display:block; min-height:100vh; overflow-x:hidden;">
 
 <!-- Navigation Bar -->
-<nav class="landing-nav">
-  <div class="nav-container">
-    <!-- Brand Logo -->
-    <a href="#" style="text-decoration:none; display:flex; align-items:center; gap:0.85rem;">
-      <div style="width:44px; height:44px; font-size:1.5rem; background:linear-gradient(135deg, #0284c7, #0369a1); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800;">🏥</div>
+<nav style="background:rgba(15, 23, 42, 0.95); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.1); position:sticky; top:0; z-index:100; padding:1.25rem 2.5rem;">
+  <div style="max-width:1350px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
+    <div style="display:flex; align-items:center; gap:1rem;">
+      <div class="brand-logo" style="width:48px; height:48px; font-size:1.6rem;">+</div>
       <div>
-        <div style="font-size:1.45rem; font-weight:800; color:var(--text-heading);">MediTrack</div>
-        <div style="color:var(--text-muted-light); font-size:0.78rem; font-weight:600;">Integrated Healthcare System</div>
+        <div class="brand-title" style="font-size:1.5rem;">MediTrack</div>
+        <div class="brand-subtitle" style="color:#94a3b8;">Integrated Healthcare Portal</div>
       </div>
-    </a>
-
-    <!-- Desktop Navigation Links -->
-    <div class="nav-links">
-      <a href="#" class="nav-link-item">Home</a>
-      <a href="#about-section" class="nav-link-item">About Us</a>
-      <a href="#services-section" class="nav-link-item">Services</a>
-      <a href="#departments-section" class="nav-link-item">Departments</a>
-      <a href="#doctors-section" class="nav-link-item">Doctors</a>
-      <a href="#contact-section" class="nav-link-item">Contact</a>
     </div>
 
-    <!-- Desktop Action Buttons -->
-    <div class="nav-actions">
-      <a href="/login.html" class="btn btn-secondary" style="background:#ffffff; color:var(--primary-dark); border-color:var(--border-light); min-height:42px; font-size:0.9rem; padding:0.5rem 1.15rem;">
-        🔑 Login Portal
-      </a>
-      <a href="/register.html" class="btn btn-primary" style="min-height:42px; padding:0.5rem 1.3rem; font-size:0.9rem; background:linear-gradient(135deg, #0284c7, #0369a1); border:none;">
-        📅 Book Appointment
-      </a>
-    </div>
-
-    <!-- Mobile Hamburger Toggle -->
-    <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
-  </div>
-
-  <!-- Mobile Drawer Menu -->
-  <div class="mobile-drawer" id="mobile-menu-drawer">
-    <a href="#" onclick="toggleMobileMenu()" class="nav-link-item">Home</a>
-    <a href="#about-section" onclick="toggleMobileMenu()" class="nav-link-item">About Us</a>
-    <a href="#services-section" onclick="toggleMobileMenu()" class="nav-link-item">Services</a>
-    <a href="#departments-section" onclick="toggleMobileMenu()" class="nav-link-item">Departments</a>
-    <a href="#doctors-section" onclick="toggleMobileMenu()" class="nav-link-item">Doctors</a>
-    <a href="#contact-section" onclick="toggleMobileMenu()" class="nav-link-item">Contact</a>
-    <div style="display:flex; gap:0.75rem; margin-top:0.5rem;">
-      <a href="/login.html" class="btn btn-secondary" style="flex:1; text-align:center;">Login Portal</a>
-      <a href="/register.html" class="btn btn-primary" style="flex:1; text-align:center;">Book Appointment</a>
+    <div style="display:flex; align-items:center; gap:1.25rem;">
+      <a href="#features-section" class="btn btn-secondary" style="background:transparent; color:#cbd5e1; border-color:rgba(255,255,255,0.2); min-height:44px;">Features</a>
+      <a href="#how-to-use-section" class="btn btn-secondary" style="background:transparent; color:#cbd5e1; border-color:rgba(255,255,255,0.2); min-height:44px;">How to Use</a>
+      <a href="/login.html" class="btn btn-primary" style="min-height:44px; padding:0.6rem 1.5rem;">Launch Portal ➔</a>
     </div>
   </div>
 </nav>
 
-<!-- Hero Section -->
-<header class="hero-section">
-  <div class="hero-container">
-    <!-- Left Hero Info -->
-    <div>
-      <div class="hero-badge">
-        ✨ Modern Patient Care & Medical Management System
-      </div>
-
-      <h1 class="hero-heading">
-        Your Health, <br><span>Our Priority</span>
-      </h1>
-
-      <p class="hero-desc">
-        MediTrack helps patients and healthcare professionals manage appointments, medical information, and prescriptions efficiently. Replaces manual paper records with a secure, digital healthcare management workflow.
-      </p>
-
-      <div class="hero-ctas">
-        <a href="/register.html" class="btn btn-primary" style="min-height:54px; padding:0.9rem 2.25rem; font-size:1.05rem; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; box-shadow:var(--shadow-md);">
-          📅 Book Appointment
-        </a>
-        <a href="#services-section" class="btn btn-secondary" style="min-height:54px; padding:0.9rem 2rem; font-size:1.05rem; background:#ffffff; color:var(--text-heading); border-color:var(--border-light);">
-          🔍 Explore Services
-        </a>
-      </div>
+<!-- Hero Entrance Section -->
+<header style="padding:5rem 2rem 4rem; text-align:center; background:radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 70%); border-bottom:1px solid rgba(255,255,255,0.08);">
+  <div style="max-width:960px; margin:0 auto;">
+    <div style="display:inline-flex; align-items:center; gap:0.5rem; background:rgba(2,132,199,0.15); border:1px solid rgba(2,132,199,0.35); padding:0.5rem 1.25rem; border-radius:9999px; color:#38bdf8; font-weight:700; font-size:0.95rem; margin-bottom:1.5rem;">
+      ✨ Milestone Integrated Patient Care Platform
     </div>
 
-    <!-- Right Hero Image -->
-    <div class="hero-img-card">
-      <img src="/images/meditrack_hero_doctor.jpg" alt="MediTrack Healthcare Physician" />
+    <h1 style="font-size:clamp(36px, 4.5vw, 54px); font-weight:800; letter-spacing:-0.03em; line-height:1.15; color:#ffffff; font-family:'Outfit', sans-serif;">
+      MediTrack – Integrated Patient Care Management System
+    </h1>
+
+    <p style="font-size:clamp(18px, 1.8vw, 22px); color:#94a3b8; margin-top:1.25rem; font-weight:500; max-width:820px; margin-left:auto; margin-right:auto; line-height:1.6;">
+      Replaces manual paper-based hospital records with a modern, secure, digital management workflow. Designed for patients, doctors, and system administrators.
+    </p>
+
+    <div style="display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap; margin-top:2.5rem;">
+      <a href="/login.html" class="btn btn-primary" style="min-height:56px; padding:0.9rem 2.5rem; font-size:1.15rem; box-shadow:0 8px 24px rgba(2,132,199,0.4);">
+        🔑 Enter Portal Login
+      </a>
+      <a href="#features-section" class="btn btn-secondary" style="background:rgba(255,255,255,0.08); color:#ffffff; border-color:rgba(255,255,255,0.2); min-height:56px; padding:0.9rem 2.2rem; font-size:1.1rem;">
+        📖 Explore Features & Guide
+      </a>
     </div>
   </div>
 </header>
 
-<!-- About Us Section -->
-<section id="about-section" class="section-padding" style="background:#ffffff; border-bottom:1px solid var(--border-light);">
-  <div class="section-container">
-    <div class="contact-grid">
-      <div>
-        <span class="section-tag">About MediTrack</span>
-        <h2 class="section-title">Simplifying Patient Care & Medical Management</h2>
-        <p style="font-size:1.05rem; color:var(--text-body); line-height:1.7; margin-top:1.25rem;">
-          MediTrack is an Integrated Patient Care Management System designed to simplify patient care, appointments, consultations, medical records, and prescriptions.
-        </p>
-        <p style="font-size:1rem; color:var(--text-muted-light); line-height:1.7; margin-top:1rem;">
-          Built on Node.js, Express.js, and MongoDB Atlas, MediTrack provides a unified, secure platform where patient medical histories, diagnostic reports, and physician prescriptions are accessible in real-time.
-        </p>
-        <div style="display:flex; gap:2.5rem; margin-top:2rem; flex-wrap:wrap;">
-          <div>
-            <div style="font-size:2.2rem; font-weight:800; color:var(--primary-blue);">100%</div>
-            <div style="font-size:0.9rem; color:var(--text-muted-light); font-weight:600;">Secure Digital Records</div>
-          </div>
-          <div>
-            <div style="font-size:2.2rem; font-weight:800; color:#0369a1;">3 Roles</div>
-            <div style="font-size:0.9rem; color:var(--text-muted-light); font-weight:600;">Isolated Access Control</div>
-          </div>
-          <div>
-            <div style="font-size:2.2rem; font-weight:800; color:#16a34a;">24/7</div>
-            <div style="font-size:0.9rem; color:var(--text-muted-light); font-weight:600;">Real-Time Appointment Engine</div>
-          </div>
+<!-- Features About Project Section -->
+<section id="features-section" style="padding:5rem 2rem; max-width:1350px; margin:0 auto;">
+  <div style="text-align:center; margin-bottom:4rem;">
+    <h2 style="font-size:clamp(28px, 3vw, 38px); font-weight:800; color:#fff; font-family:'Outfit', sans-serif;">
+      ⚡ Features About the Project
+    </h2>
+    <p style="font-size:1.15rem; color:#94a3b8; margin-top:0.5rem;">
+      Core capabilities implemented in MediTrack
+    </p>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); gap:2rem;">
+
+    <!-- Feature 1 -->
+    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem; transition:transform 0.2s ease;">
+      <div style="width:56px; height:56px; background:#e0f2fe; color:#0284c7; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:1.25rem;">
+        📝
+      </div>
+      <h3 style="font-size:1.35rem; font-weight:800; color:#fff; font-family:'Outfit', sans-serif;">1. Patient Registration & Auto PAT ID</h3>
+      <p style="font-size:1.05rem; color:#cbd5e1; margin-top:0.5rem; line-height:1.6;">
+        Automatically assigns unique Patient IDs (<code>PAT001</code>, <code>PAT002</code>, <code>PAT003</code>...). Captures demographics and validates phone numbers, emails, and ages to prevent duplicate records.
+      </p>
+    </div>
+
+    <!-- Feature 2 -->
+    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem; transition:transform 0.2s ease;">
+      <div style="width:56px; height:56px; background:#f3e8ff; color:#9333ea; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:1.25rem;">
+        🩺
+      </div>
+      <h3 style="font-size:1.35rem; font-weight:800; color:#fff; font-family:'Outfit', sans-serif;">2. Medical Profile Management</h3>
+      <p style="font-size:1.05rem; color:#cbd5e1; margin-top:0.5rem; line-height:1.6;">
+        Maintains a comprehensive medical file connected to the Patient ID. Stores Blood Group, Known Allergies, Existing Chronic Diseases, Medical History, Medications, Emergency Contact, and Insurance details.
+      </p>
+    </div>
+
+    <!-- Feature 3 -->
+    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem; transition:transform 0.2s ease;">
+      <div style="width:56px; height:56px; background:#dcfce7; color:#16a34a; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:1.25rem;">
+        🗓️
+      </div>
+      <h3 style="font-size:1.35rem; font-weight:800; color:#fff; font-family:'Outfit', sans-serif;">3. Smart Appointment Scheduling</h3>
+      <p style="font-size:1.05rem; color:#cbd5e1; margin-top:0.5rem; line-height:1.6;">
+        Real-time slot picker (09:00 AM – 04:00 PM). Features strict <strong>Double-Booking Collision Prevention</strong> at both frontend and database levels so a booked slot immediately becomes unavailable.
+      </p>
+    </div>
+
+    <!-- Feature 4 -->
+    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem; transition:transform 0.2s ease;">
+      <div style="width:56px; height:56px; background:#ffedd5; color:#ea580c; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:1.25rem;">
+        🔍
+      </div>
+      <h3 style="font-size:1.35rem; font-weight:800; color:#fff; font-family:'Outfit', sans-serif;">4. Unified Patient Directory Search</h3>
+      <p style="font-size:1.05rem; color:#cbd5e1; margin-top:0.5rem; line-height:1.6;">
+        Doctors and administrators can search by <strong>Patient ID</strong>, <strong>Name</strong>, or <strong>Phone Number</strong> to inspect the unified patient file (Demographics + Medical Record + Appointment History).
+      </p>
+    </div>
+
+    <!-- Feature 5 -->
+    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem; transition:transform 0.2s ease;">
+      <div style="width:56px; height:56px; background:#e0f2fe; color:#0284c7; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:1.25rem;">
+        🩺
+      </div>
+      <h3 style="font-size:1.35rem; font-weight:800; color:#fff; font-family:'Outfit', sans-serif;">5. Doctor Clinical Workspace</h3>
+      <p style="font-size:1.05rem; color:#cbd5e1; margin-top:0.5rem; line-height:1.6;">
+        Dedicated physician workspace displaying daily consultation agendas, clinical consultation notes, and patient record inspection drawers.
+      </p>
+    </div>
+
+    <!-- Feature 6 -->
+    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem; transition:transform 0.2s ease;">
+      <div style="width:56px; height:56px; background:#fee2e2; color:#dc2626; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:1.25rem;">
+        ⚙️
+      </div>
+      <h3 style="font-size:1.35rem; font-weight:800; color:#fff; font-family:'Outfit', sans-serif;">6. Admin Security & Control Center</h3>
+      <p style="font-size:1.05rem; color:#cbd5e1; margin-top:0.5rem; line-height:1.6;">
+        Administrative control center for live MongoDB analytics, doctor credential authorization, user account management, permanent deletion, and audit logging.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- How To Use MediTrack Section -->
+<section id="how-to-use-section" style="padding:5rem 2rem; background:rgba(255,255,255,0.02); border-top:1px solid rgba(255,255,255,0.08); border-bottom:1px solid rgba(255,255,255,0.08);">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div style="text-align:center; margin-bottom:4rem;">
+      <h2 style="font-size:clamp(28px, 3vw, 38px); font-weight:800; color:#fff; font-family:'Outfit', sans-serif;">
+        📖 How to Use MediTrack
+      </h2>
+      <p style="font-size:1.15rem; color:#94a3b8; margin-top:0.5rem;">
+        Core System Workflows by Role
+      </p>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:2rem;">
+
+      <!-- Patient Role Workflow -->
+      <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem; position:relative;">
+        <div style="width:56px; height:56px; background:#e0f2fe; color:#0284c7; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:1.25rem;">
+          👤
         </div>
-      </div>
-
-      <!-- Right Image Card -->
-      <div style="border-radius:24px; overflow:hidden; box-shadow:var(--shadow-sm); border:6px solid #f1f5f9;">
-        <img src="/images/meditrack_about_care.jpg" alt="MediTrack Hospital Care Team" style="width:100%; height:auto; display:block;" />
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Healthcare Services Section -->
-<section id="services-section" class="section-padding" style="background:#f8fafc; border-bottom:1px solid var(--border-light);">
-  <div class="section-container">
-    <div class="section-header">
-      <span class="section-tag">Healthcare Services</span>
-      <h2 class="section-title">Our Core Healthcare Services</h2>
-      <p class="section-sub">Comprehensive digital healthcare solutions for modern hospital care</p>
-    </div>
-
-    <div class="card-grid-3">
-      <!-- Service 1 -->
-      <div class="service-card">
-        <div class="icon-box">📝</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:var(--text-heading); margin-bottom:0.5rem;">1. Patient Registration & Auto PAT ID</h3>
-        <p style="font-size:0.98rem; color:var(--text-body); margin:0;">
-          Automatically assigns unique Patient IDs (<code>PAT001</code>, <code>PAT002</code>...) with contact validation and location mapping to prevent duplicate records.
+        <h3 style="font-size:1.35rem; font-weight:800; color:#38bdf8; font-family:'Outfit', sans-serif; margin-bottom:0.75rem;">1. Patient Workflow</h3>
+        <p style="font-size:1.05rem; color:#cbd5e1; line-height:1.6;">
+          Register/Login ➔ Book appointments ➔ View prescriptions and health records
         </p>
       </div>
 
-      <!-- Service 2 -->
-      <div class="service-card">
-        <div class="icon-box">🩺</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:var(--text-heading); margin-bottom:0.5rem;">2. Medical Profiles & Records</h3>
-        <p style="font-size:0.98rem; color:var(--text-body); margin:0;">
-          Maintains a complete medical file storing Blood Group, Known Allergies, Chronic Diseases, Medical History, Current Medications, and Emergency Contacts.
-        </p>
-      </div>
-
-      <!-- Service 3 -->
-      <div class="service-card">
-        <div class="icon-box">🗓️</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:var(--text-heading); margin-bottom:0.5rem;">3. Smart Appointment Scheduling</h3>
-        <p style="font-size:0.98rem; color:var(--text-body); margin:0;">
-          Real-time slot picker with strict double-booking collision prevention so a booked slot immediately becomes unavailable for other patients.
-        </p>
-      </div>
-
-      <!-- Service 4 -->
-      <div class="service-card">
-        <div class="icon-box">💊</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:var(--text-heading); margin-bottom:0.5rem;">4. Digital Prescriptions & Notes</h3>
-        <p style="font-size:0.98rem; color:var(--text-body); margin:0;">
-          Physicians issue structured electronic prescriptions (Medicine Name, Dosage, Timing, Duration) and record clinical consultation notes.
-        </p>
-      </div>
-
-      <!-- Service 5 -->
-      <div class="service-card">
-        <div class="icon-box">📁</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:var(--text-heading); margin-bottom:0.5rem;">5. Direct Lab Reports Upload</h3>
-        <p style="font-size:0.98rem; color:var(--text-body); margin:0;">
-          Patients can directly upload PDF, JPG, and PNG blood test, X-ray, and scan reports. Authorized doctors view reports associated with their patients.
-        </p>
-      </div>
-
-      <!-- Service 6 -->
-      <div class="service-card">
-        <div class="icon-box">⚙️</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:var(--text-heading); margin-bottom:0.5rem;">6. Admin Security & Control</h3>
-        <p style="font-size:0.98rem; color:var(--text-body); margin:0;">
-          Administrative control center for live MongoDB analytics, doctor credential authorization, user account management, permanent deletion, and audit logs.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Departments & Doctors Section -->
-<section id="departments-section" class="section-padding" style="background:#ffffff; border-bottom:1px solid var(--border-light);">
-  <div class="section-container">
-    <div class="section-header">
-      <span class="section-tag">Specialized Care</span>
-      <h2 class="section-title">Departments & Verified Physicians</h2>
-      <p class="section-sub">Qualified medical specialists providing expert care across hospital departments</p>
-    </div>
-
-    <div id="doctors-section" class="card-grid-3" style="grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));">
-      <!-- Cardiology -->
-      <div class="service-card" style="text-align:center;">
-        <div style="font-size:2.8rem; margin-bottom:0.5rem;">🫀</div>
-        <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">Cardiology</h3>
-        <p style="font-size:0.95rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Rajesh Kumar (DOC001)</p>
-        <span style="font-size:0.85rem; color:var(--text-muted-light); display:block; margin-bottom:1rem;">License: MCI-88992 • Cardiology Dept</span>
-        <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
-      </div>
-
-      <!-- General Medicine -->
-      <div class="service-card" style="text-align:center;">
-        <div style="font-size:2.8rem; margin-bottom:0.5rem;">🩺</div>
-        <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">General Medicine</h3>
-        <p style="font-size:0.95rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Sunita Rao (DOC002)</p>
-        <span style="font-size:0.85rem; color:var(--text-muted-light); display:block; margin-bottom:1rem;">License: MCI-77114 • Medicine Dept</span>
-        <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
-      </div>
-
-      <!-- Pediatrics -->
-      <div class="service-card" style="text-align:center;">
-        <div style="font-size:2.8rem; margin-bottom:0.5rem;">👶</div>
-        <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">Pediatrics & Child Care</h3>
-        <p style="font-size:0.95rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Ananya Reddy (DOC003)</p>
-        <span style="font-size:0.85rem; color:var(--text-muted-light); display:block; margin-bottom:1rem;">License: MCI-66231 • Pediatrics Dept</span>
-        <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
-      </div>
-
-      <!-- Orthopedics -->
-      <div class="service-card" style="text-align:center;">
-        <div style="font-size:2.8rem; margin-bottom:0.5rem;">🦴</div>
-        <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">Orthopedics & Joint Care</h3>
-        <p style="font-size:0.95rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Vikram Verma (DOC004)</p>
-        <span style="font-size:0.85rem; color:var(--text-muted-light); display:block; margin-bottom:1rem;">License: MCI-55412 • Orthopedics Dept</span>
-        <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- How To Use MediTrack / Role Workflows Section -->
-<section id="how-to-use-section" class="section-padding" style="background:#f8fafc; border-bottom:1px solid var(--border-light);">
-  <div class="section-container">
-    <div class="section-header">
-      <span class="section-tag">Role Workflows</span>
-      <h2 class="section-title">How to Use MediTrack</h2>
-      <p class="section-sub">Core system workflows organized by role</p>
-    </div>
-
-    <div class="card-grid-3">
-      <!-- Role 1: Patient -->
-      <div class="service-card">
-        <div class="icon-box">👤</div>
-        <h3 style="font-size:1.3rem; font-weight:800; color:var(--primary-dark); margin-bottom:0.5rem;">1. Patient Workflow</h3>
-        <p style="font-size:1.05rem; color:var(--text-body); font-weight:600; line-height:1.6; margin:0;">
-          Register/Login → Manage Profile → Book Appointments → View Prescriptions
-        </p>
-      </div>
-
-      <!-- Role 2: Doctor -->
-      <div class="service-card">
-        <div class="icon-box" style="background:#f3e8ff; color:#9333ea;">🩺</div>
-        <h3 style="font-size:1.3rem; font-weight:800; color:#7e22ce; margin-bottom:0.5rem;">2. Doctor Workflow</h3>
-        <p style="font-size:1.05rem; color:var(--text-body); font-weight:600; line-height:1.6; margin:0;">
-          Login → View Appointments → Consult Patients → Add Diagnosis & Prescriptions
-        </p>
-      </div>
-
-      <!-- Role 3: Administrator -->
-      <div class="service-card">
-        <div class="icon-box" style="background:#fee2e2; color:#dc2626;">⚙️</div>
-        <h3 style="font-size:1.3rem; font-weight:800; color:#991b1b; margin-bottom:0.5rem;">3. Administrator Workflow</h3>
-        <p style="font-size:1.05rem; color:var(--text-body); font-weight:600; line-height:1.6; margin:0;">
-          Login → Manage Users → Manage System
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Digital Portal Access by Role Section -->
-<section class="section-padding" style="background:#ffffff; border-bottom:1px solid var(--border-light);">
-  <div class="section-container" style="text-align:center;">
-    <div class="section-header">
-      <span class="section-tag">System Login Portals</span>
-      <h2 class="section-title">Digital Portal Access by Role</h2>
-      <p class="section-sub">Select your role to log in and access MediTrack:</p>
-    </div>
-
-    <div class="card-grid-3">
-      <!-- Role 1: Patient -->
-      <a href="/login.html" class="service-card" style="text-decoration:none; text-align:center;">
-        <div style="font-size:3rem; margin-bottom:0.5rem;">👤</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:var(--primary-dark); margin-bottom:0.5rem;">Patient Portal</h3>
-        <p style="font-size:0.95rem; color:var(--text-body); margin:0;">
-          Register/Login → Manage Profile → Book Appointments → View Prescriptions
-        </p>
-      </a>
-
-      <!-- Role 2: Doctor -->
-      <a href="/login.html" class="service-card" style="text-decoration:none; text-align:center;">
-        <div style="font-size:3rem; margin-bottom:0.5rem;">🩺</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:#7e22ce; margin-bottom:0.5rem;">Doctor Portal</h3>
-        <p style="font-size:0.95rem; color:var(--text-body); margin:0;">
-          Login → View Appointments → Consult Patients → Add Diagnosis & Prescriptions
-        </p>
-      </a>
-
-      <!-- Role 3: Administrator -->
-      <a href="/login.html" class="service-card" style="text-decoration:none; text-align:center;">
-        <div style="font-size:3rem; margin-bottom:0.5rem;">⚙️</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:#991b1b; margin-bottom:0.5rem;">Administrator Portal</h3>
-        <p style="font-size:0.95rem; color:var(--text-body); margin:0;">
-          Login → Manage Users → Manage System
-        </p>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Contact Section -->
-<section id="contact-section" class="section-padding" style="background:#f8fafc; border-bottom:1px solid var(--border-light);">
-  <div class="section-container">
-    <div class="section-header">
-      <span class="section-tag">Get In Touch</span>
-      <h2 class="section-title">Contact & Network Support</h2>
-      <p class="section-sub">Have questions or need assistance? Connect with the MediTrack Support Team</p>
-    </div>
-
-    <div class="contact-grid">
-      <!-- Contact Info Cards -->
-      <div style="display:flex; flex-direction:column; gap:1.5rem;">
-        <div class="service-card" style="padding:1.5rem; display:flex; align-items:center; gap:1.25rem;">
-          <div style="font-size:2.2rem; flex-shrink:0;">📍</div>
-          <div>
-            <h4 style="font-size:1.1rem; font-weight:800; color:var(--text-heading); margin:0 0 0.25rem 0;">Headquarters Location</h4>
-            <p style="font-size:0.95rem; color:var(--text-body); margin:0;">MediTrack Healthcare Network<br>Park Road, Kurnool, Andhra Pradesh</p>
-          </div>
+      <!-- Doctor Role Workflow -->
+      <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem; position:relative;">
+        <div style="width:56px; height:56px; background:#f3e8ff; color:#9333ea; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:1.25rem;">
+          🩺
         </div>
-
-        <div class="service-card" style="padding:1.5rem; display:flex; align-items:center; gap:1.25rem;">
-          <div style="font-size:2.2rem; flex-shrink:0;">📞</div>
-          <div>
-            <h4 style="font-size:1.1rem; font-weight:800; color:var(--text-heading); margin:0 0 0.25rem 0;">Phone & Support Helpline</h4>
-            <p style="font-size:0.95rem; color:var(--text-body); margin:0;">Phone: +91 8518 220011<br>Helpline: +91 8518 990000</p>
-          </div>
-        </div>
-
-        <div class="service-card" style="padding:1.5rem; display:flex; align-items:center; gap:1.25rem;">
-          <div style="font-size:2.2rem; flex-shrink:0;">✉️</div>
-          <div>
-            <h4 style="font-size:1.1rem; font-weight:800; color:var(--text-heading); margin:0 0 0.25rem 0;">Email Support</h4>
-            <p style="font-size:0.95rem; color:var(--text-body); margin:0;">support@meditrack.org<br>info@meditrack.org</p>
-          </div>
-        </div>
+        <h3 style="font-size:1.35rem; font-weight:800; color:#c084fc; font-family:'Outfit', sans-serif; margin-bottom:0.75rem;">2. Doctor Workflow</h3>
+        <p style="font-size:1.05rem; color:#cbd5e1; line-height:1.6;">
+          Login ➔ Manage appointments ➔ Consult patients ➔ Add diagnosis and prescriptions
+        </p>
       </div>
 
-      <!-- Contact Inquiry Form -->
-      <div class="service-card" style="padding:2.25rem;">
-        <h3 style="font-size:1.3rem; font-weight:800; color:var(--text-heading); margin-bottom:1.25rem;">Send Support Message</h3>
-        <form onsubmit="event.preventDefault(); alert('Thank you for contacting MediTrack. Our team will reach back out to you shortly!'); this.reset();">
-          <div class="form-group" style="margin-bottom:1rem;">
-            <label class="form-label" for="contact_name">Full Name <span class="required">*</span></label>
-            <input type="text" id="contact_name" class="form-control" required placeholder="e.g. Rahul Sharma">
-          </div>
-          <div class="form-group" style="margin-bottom:1rem;">
-            <label class="form-label" for="contact_email">Email Address <span class="required">*</span></label>
-            <input type="email" id="contact_email" class="form-control" required placeholder="rahul@example.com">
-          </div>
-          <div class="form-group" style="margin-bottom:1rem;">
-            <label class="form-label" for="contact_message">Your Inquiry / Message <span class="required">*</span></label>
-            <textarea id="contact_message" class="form-control" rows="4" required placeholder="How can we assist you with MediTrack?"></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary" style="width:100%; min-height:48px; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; font-size:1rem;">
-            📨 Send Message
-          </button>
-        </form>
+      <!-- Administrator Role Workflow -->
+      <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem; position:relative;">
+        <div style="width:56px; height:56px; background:#fee2e2; color:#dc2626; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:1.25rem;">
+          ⚙️
+        </div>
+        <h3 style="font-size:1.35rem; font-weight:800; color:#fca5a5; font-family:'Outfit', sans-serif; margin-bottom:0.75rem;">3. Administrator Workflow</h3>
+        <p style="font-size:1.05rem; color:#cbd5e1; line-height:1.6;">
+          Login ➔ Manage users and system activities
+        </p>
       </div>
+
     </div>
+  </div>
+</section>
+
+<!-- Direct Role Login Section -->
+<section style="padding:5rem 2rem; max-width:1100px; margin:0 auto; text-align:center;">
+  <h2 style="font-size:clamp(26px, 3vw, 34px); font-weight:800; color:#fff; font-family:'Outfit', sans-serif; margin-bottom:1rem;">
+    🚀 Digital Portal Access by Role
+  </h2>
+  <p style="font-size:1.1rem; color:#94a3b8; margin-bottom:2.5rem;">
+    Select your role to log in and access MediTrack:
+  </p>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.75rem;">
+    <!-- Role 1: Patient -->
+    <a href="/login.html" class="card" style="text-decoration:none; background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.15); padding:2rem; text-align:center; transition:transform 0.2s ease;">
+      <div style="font-size:3rem; margin-bottom:0.75rem;">👤</div>
+      <div style="font-size:1.3rem; font-weight:800; color:#38bdf8;">Patient Portal</div>
+      <div style="font-size:0.95rem; color:#cbd5e1; margin-top:0.5rem; line-height:1.5;">
+        Register/Login → Book appointments → View prescriptions and health records
+      </div>
+    </a>
+
+    <!-- Role 2: Doctor -->
+    <a href="/login.html" class="card" style="text-decoration:none; background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.15); padding:2rem; text-align:center; transition:transform 0.2s ease;">
+      <div style="font-size:3rem; margin-bottom:0.75rem;">🩺</div>
+      <div style="font-size:1.3rem; font-weight:800; color:#c084fc;">Doctor Portal</div>
+      <div style="font-size:0.95rem; color:#cbd5e1; margin-top:0.5rem; line-height:1.5;">
+        Login → Manage appointments → Consult patients → Add diagnosis and prescriptions
+      </div>
+    </a>
+
+    <!-- Role 3: Administrator -->
+    <a href="/login.html" class="card" style="text-decoration:none; background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.15); padding:2rem; text-align:center; transition:transform 0.2s ease;">
+      <div style="font-size:3rem; margin-bottom:0.75rem;">⚙️</div>
+      <div style="font-size:1.3rem; font-weight:800; color:#fca5a5;">Administrator Portal</div>
+      <div style="font-size:0.95rem; color:#cbd5e1; margin-top:0.5rem; line-height:1.5;">
+        Login → Manage users and system activities
+      </div>
+    </a>
   </div>
 </section>
 
 <!-- Footer -->
-<footer style="background:#0f172a; color:#cbd5e1; padding:3.5rem 2rem 2rem; border-top:1px solid #1e293b;">
-  <div class="section-container">
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:2.5rem; margin-bottom:2.5rem;">
-      <!-- Footer Col 1 -->
-      <div>
-        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
-          <div style="width:38px; height:38px; background:#0284c7; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:1.3rem;">🏥</div>
-          <span style="font-size:1.35rem; font-weight:800; color:#ffffff; font-family:'Outfit', sans-serif;">MediTrack</span>
-        </div>
-        <p style="font-size:0.925rem; color:#94a3b8; line-height:1.6; margin:0;">
-          Integrated Patient Care Management System simplifying patient consultations, digital medical files, appointments, and prescriptions.
-        </p>
-      </div>
-
-      <!-- Footer Col 2 -->
-      <div>
-        <h4 style="color:#ffffff; font-size:1.05rem; font-weight:800; margin-bottom:1rem;">Quick Navigation</h4>
-        <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.6rem; font-size:0.9rem;">
-          <li><a href="#" style="color:#cbd5e1; text-decoration:none;">Home</a></li>
-          <li><a href="#about-section" style="color:#cbd5e1; text-decoration:none;">About Us</a></li>
-          <li><a href="#services-section" style="color:#cbd5e1; text-decoration:none;">Services</a></li>
-          <li><a href="#departments-section" style="color:#cbd5e1; text-decoration:none;">Departments & Doctors</a></li>
-          <li><a href="#contact-section" style="color:#cbd5e1; text-decoration:none;">Contact Support</a></li>
-        </ul>
-      </div>
-
-      <!-- Footer Col 3 -->
-      <div>
-        <h4 style="color:#ffffff; font-size:1.05rem; font-weight:800; margin-bottom:1rem;">System Portals</h4>
-        <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.6rem; font-size:0.9rem;">
-          <li><a href="/login.html" style="color:#38bdf8; text-decoration:none;">👤 Patient Login Portal</a></li>
-          <li><a href="/login.html" style="color:#c084fc; text-decoration:none;">🩺 Doctor Workspace Portal</a></li>
-          <li><a href="/login.html" style="color:#fca5a5; text-decoration:none;">⚙️ Administrator Portal</a></li>
-          <li><a href="/register.html" style="color:#4ade80; text-decoration:none;">📝 New Patient Registration</a></li>
-        </ul>
-      </div>
-
-      <!-- Footer Col 4 -->
-      <div>
-        <h4 style="color:#ffffff; font-size:1.05rem; font-weight:800; margin-bottom:1rem;">Contact Info</h4>
-        <p style="font-size:0.9rem; color:#94a3b8; line-height:1.6; margin:0 0 0.5rem 0;">
-          📍 Park Road, Kurnool, Andhra Pradesh
-        </p>
-        <p style="font-size:0.9rem; color:#94a3b8; line-height:1.6; margin:0 0 0.5rem 0;">
-          📞 Helpline: +91 8518 220011
-        </p>
-        <p style="font-size:0.9rem; color:#94a3b8; line-height:1.6; margin:0;">
-          ✉️ Email: support@meditrack.org
-        </p>
-      </div>
-    </div>
-
-    <!-- Sub Footer -->
-    <div style="border-top:1px solid #1e293b; padding-top:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; font-size:0.875rem; color:#64748b;">
-      <div>© 2026 MediTrack – Integrated Patient Care Management System. All Rights Reserved.</div>
-      <div>Powered by Node.js • Express.js • MongoDB Atlas • Google Maps API</div>
-    </div>
+<footer style="background:#090d16; border-top:1px solid rgba(255,255,255,0.08); padding:2rem; text-align:center; color:#64748b; font-size:0.95rem;">
+  <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+    <div><strong>MediTrack</strong> – Integrated Patient Care Management System</div>
+    <div>Node.js • Express.js • MongoDB Atlas • Google Maps</div>
   </div>
 </footer>
-
-<script>
-function toggleMobileMenu() {
-  const drawer = document.getElementById('mobile-menu-drawer');
-  if (drawer) {
-    drawer.style.display = drawer.style.display === 'flex' ? 'none' : 'flex';
-  }
-}
-</script>
 
 </body>
 </html>
