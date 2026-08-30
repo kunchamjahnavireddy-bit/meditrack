@@ -27,7 +27,7 @@ exports.upsertProfile = async (req, res) => {
     const {
       bloodGroup, allergies, existingDiseases,
       medicalHistory, currentMedications,
-      emergencyName, emergencyPhone, insuranceDetails
+      emergencyName, emergencyPhone, insuranceDetails, aadhaarNumber
     } = req.body;
 
     const profileData = { updatedAt: new Date() };
@@ -40,9 +40,21 @@ exports.upsertProfile = async (req, res) => {
     if (emergencyPhone !== undefined) profileData.emergencyPhone = emergencyPhone || 'N/A';
     if (insuranceDetails !== undefined) profileData.insuranceDetails = insuranceDetails || 'None';
 
+    if (aadhaarNumber !== undefined && aadhaarNumber !== null && aadhaarNumber !== '') {
+      const cleanAadhaar = String(aadhaarNumber).trim().replace(/\s+/g, '');
+      if (!/^\d{12}$/.test(cleanAadhaar)) {
+        return res.status(400).json({ error: "Aadhaar Number must be exactly 12 numeric digits." });
+      }
+      profileData.aadhaarNumber = cleanAadhaar;
+    }
+
     if (getIsConnectedToMongo()) {
       const patient = await Patient.findOne({ patientId: pid });
       if (!patient) return res.status(404).json({ error: "Patient ID does not exist." });
+
+      if (profileData.aadhaarNumber) {
+        await Patient.updateOne({ patientId: pid }, { $set: { aadhaarNumber: profileData.aadhaarNumber } });
+      }
 
       const profile = await PatientProfile.findOneAndUpdate(
         { patientId: pid },
@@ -53,6 +65,10 @@ exports.upsertProfile = async (req, res) => {
     } else {
       const patient = memoryStore.patients.find(p => p.patientId.toUpperCase() === pid);
       if (!patient) return res.status(404).json({ error: "Patient ID does not exist." });
+
+      if (profileData.aadhaarNumber && patient) {
+        patient.aadhaarNumber = profileData.aadhaarNumber;
+      }
 
       let profile = memoryStore.profiles.find(p => p.patientId.toUpperCase() === pid);
       if (profile) {
@@ -68,6 +84,7 @@ exports.upsertProfile = async (req, res) => {
           emergencyName: emergencyName || 'N/A',
           emergencyPhone: emergencyPhone || 'N/A',
           insuranceDetails: insuranceDetails || 'None',
+          aadhaarNumber: profileData.aadhaarNumber || 'N/A',
           updatedAt: new Date()
         };
         memoryStore.profiles.push(profile);

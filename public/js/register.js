@@ -24,6 +24,13 @@ function initRegistrationForm() {
   const form = document.getElementById('patient-registration-form');
   if (!form) return;
 
+  const aadhaarInput = document.getElementById('aadhaar_number');
+  if (aadhaarInput) {
+    aadhaarInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 12);
+    });
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -35,6 +42,15 @@ function initRegistrationForm() {
       return;
     }
 
+    const aadhaarVal = aadhaarInput ? aadhaarInput.value.trim() : '';
+    if (!/^\d{12}$/.test(aadhaarVal)) {
+      showToast('Aadhaar Number must be exactly 12 numeric digits.', 'error');
+      return;
+    }
+
+    const insuranceInput = document.getElementById('insurance_details');
+    const insuranceVal = insuranceInput ? insuranceInput.value.trim() : 'None';
+
     const payload = {
       fullName: document.getElementById('full_name').value.trim(),
       password: password,
@@ -44,6 +60,8 @@ function initRegistrationForm() {
       phone: document.getElementById('phone').value.trim(),
       email: document.getElementById('email').value.trim(),
       address: document.getElementById('address').value.trim(),
+      aadhaarNumber: aadhaarVal,
+      insuranceDetails: insuranceVal,
       latitude: document.getElementById('latitude').value || null,
       longitude: document.getElementById('longitude').value || null
     };

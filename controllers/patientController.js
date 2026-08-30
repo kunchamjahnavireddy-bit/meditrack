@@ -57,10 +57,15 @@ exports.getNextPatientId = async (req, res) => {
 // POST /api/patients (Public Self-Registration for Patients)
 exports.registerPatient = async (req, res) => {
   try {
-    const { fullName, age, gender, dateOfBirth, phone, email, address, patientLocation, password, latitude, longitude } = req.body;
+    const { fullName, age, gender, dateOfBirth, phone, email, address, patientLocation, password, latitude, longitude, aadhaarNumber, insuranceDetails } = req.body;
 
     if (!fullName || !phone || !email || !password) {
       return res.status(400).json({ error: "Full Name, Phone Number, Email Address, and Password are required for registration." });
+    }
+
+    const cleanAadhaar = aadhaarNumber ? String(aadhaarNumber).trim().replace(/\s+/g, '') : '';
+    if (!cleanAadhaar || !/^\d{12}$/.test(cleanAadhaar)) {
+      return res.status(400).json({ error: "Aadhaar Number is required and must be exactly 12 numeric digits." });
     }
 
     const cleanEmail = email.trim().toLowerCase();
@@ -81,6 +86,7 @@ exports.registerPatient = async (req, res) => {
     const patientId = await generateNextPatientId();
     const hashedPassword = hashPassword(password.trim());
     const locationStr = (patientLocation && patientLocation.trim()) ? patientLocation.trim() : (address ? address.split(',')[0].trim() : 'Kurnool');
+    const insuranceStr = (insuranceDetails && insuranceDetails.trim()) ? insuranceDetails.trim() : 'None';
 
     const newPatient = {
       patientId,
@@ -93,6 +99,7 @@ exports.registerPatient = async (req, res) => {
       email: cleanEmail,
       address: (address && address.trim()) ? address.trim() : 'Kurnool',
       patientLocation: locationStr,
+      aadhaarNumber: cleanAadhaar,
       accountStatus: 'active',
       location: {
         latitude: latitude ? Number(latitude) : null,
@@ -104,7 +111,7 @@ exports.registerPatient = async (req, res) => {
     if (getIsConnectedToMongo()) {
       const createdPatient = await Patient.create(newPatient);
 
-      // Seed blank medical profile
+      // Seed medical profile with Aadhaar & Insurance details
       await PatientProfile.create({
         patientId,
         bloodGroup: 'Not Specified',
@@ -114,7 +121,8 @@ exports.registerPatient = async (req, res) => {
         currentMedications: 'None',
         emergencyName: '',
         emergencyPhone: '',
-        insuranceDetails: 'None'
+        insuranceDetails: insuranceStr,
+        aadhaarNumber: cleanAadhaar
       });
 
       // Seed User authentication record
@@ -145,7 +153,8 @@ exports.registerPatient = async (req, res) => {
         currentMedications: 'None',
         emergencyName: '',
         emergencyPhone: '',
-        insuranceDetails: 'None',
+        insuranceDetails: insuranceStr,
+        aadhaarNumber: cleanAadhaar,
         updatedAt: new Date()
       });
 

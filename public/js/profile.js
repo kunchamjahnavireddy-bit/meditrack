@@ -465,6 +465,7 @@ function populateProfileForm(profile) {
   if (!profile) return;
   setVal('blood_group', profile.bloodGroup);
   setVal('insurance_details', profile.insuranceDetails);
+  setVal('aadhaar_number', profile.aadhaarNumber || 'N/A');
   setVal('allergies', profile.allergies);
   setVal('existing_diseases', profile.existingDiseases);
   setVal('medical_history', profile.medicalHistory);
@@ -478,6 +479,13 @@ function initProfileFormHandler(patientId) {
   const alertDiv = document.getElementById('medical-profile-form-alert');
   if (!form) return;
 
+  const aadhaarInput = document.getElementById('aadhaar_number');
+  if (aadhaarInput) {
+    aadhaarInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 12);
+    });
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -487,9 +495,16 @@ function initProfileFormHandler(patientId) {
       alertDiv.innerHTML = '';
     }
 
+    const aadhaarVal = aadhaarInput ? aadhaarInput.value.trim() : '';
+    if (aadhaarVal && !/^\d{12}$/.test(aadhaarVal)) {
+      showToast('Aadhaar Number must be exactly 12 numeric digits.', 'error');
+      return;
+    }
+
     const payload = {
       bloodGroup: document.getElementById('blood_group').value,
       insuranceDetails: document.getElementById('insurance_details').value.trim(),
+      aadhaarNumber: aadhaarVal,
       allergies: document.getElementById('allergies').value.trim(),
       existingDiseases: document.getElementById('existing_diseases').value.trim(),
       medicalHistory: document.getElementById('medical_history').value.trim(),

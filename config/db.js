@@ -46,6 +46,7 @@ let memoryStore = {
       emergencyName: "Suresh Sharma (Father)",
       emergencyPhone: "+91 98123 00000",
       insuranceDetails: "Star Health Policy #109283",
+      aadhaarNumber: "987654321098",
       updatedAt: new Date()
     },
     {
@@ -58,6 +59,7 @@ let memoryStore = {
       emergencyName: "Amit Verma (Spouse)",
       emergencyPhone: "+91 98234 00000",
       insuranceDetails: "HDFC ERGO Policy #992812",
+      aadhaarNumber: "987654321099",
       updatedAt: new Date()
     }
   ],

@@ -54,6 +54,11 @@ const PatientSchema = new mongoose.Schema({
     default: 'Kurnool',
     trim: true
   },
+  aadhaarNumber: {
+    type: String,
+    default: 'N/A',
+    trim: true
+  },
   accountStatus: {
     type: String,
     enum: ['active', 'inactive', 'pending', 'deceased', 'deleted'],

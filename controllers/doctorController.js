@@ -249,7 +249,8 @@ exports.getDoctorPatientRecord = async (req, res) => {
       accidentHistory: sanitize(profile ? profile.accidentHistory : 'None'),
       emergencyName: sanitize(profile ? profile.emergencyName : 'N/A'),
       emergencyPhone: sanitize(profile ? profile.emergencyPhone : 'N/A'),
-      insuranceDetails: sanitize(profile ? profile.insuranceDetails : 'None')
+      insuranceDetails: sanitize(profile ? profile.insuranceDetails : 'None'),
+      aadhaarNumber: sanitize((profile && profile.aadhaarNumber) ? profile.aadhaarNumber : (patient && patient.aadhaarNumber ? patient.aadhaarNumber : 'N/A'))
     };
 
     return res.json({

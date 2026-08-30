@@ -621,6 +621,10 @@ function renderUnifiedClinicalFile(data, container) {
           <span class="field-label">Insurance Policy</span>
           <span class="field-value">${prof.insuranceDetails || 'None'}</span>
         </div>
+        <div class="field-pair">
+          <span class="field-label">Aadhaar Number</span>
+          <span class="field-value" style="font-weight:700; letter-spacing:0.04em;">${prof.aadhaarNumber || 'N/A'}</span>
+        </div>
         <div class="field-pair full-width">
           <span class="field-label">Known Allergies</span>
           <span class="field-value" style="color:#b91c1c; font-weight:700;">${prof.allergies || 'None'}</span>

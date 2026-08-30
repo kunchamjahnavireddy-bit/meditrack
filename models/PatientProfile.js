@@ -40,6 +40,11 @@ const PatientProfileSchema = new mongoose.Schema({
     type: String,
     default: 'None'
   },
+  aadhaarNumber: {
+    type: String,
+    default: 'N/A',
+    trim: true
+  },
   updatedAt: {
     type: Date,
     default: Date.now

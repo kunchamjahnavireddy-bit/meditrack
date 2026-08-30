@@ -160,6 +160,10 @@ async function renderUnifiedPatientFile(patient) {
           <span class="field-label">Insurance Details</span>
           <span class="field-value">${prof.insuranceDetails || 'None'}</span>
         </div>
+        <div class="field-pair">
+          <span class="field-label">Aadhaar Number</span>
+          <span class="field-value" style="font-weight:700; letter-spacing:0.04em;">${prof.aadhaarNumber || 'N/A'}</span>
+        </div>
       `;
     } else {
       profContainer.innerHTML = `<div class="alert alert-info">No medical profile on record for this patient.</div>`;
