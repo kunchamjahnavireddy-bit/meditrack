@@ -60,6 +60,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+body.landing-page-body {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+}
+
 h1, h2, h3, h4, h5, h6, .brand-title, .login-title, .page-title, .card-title {
   font-family: 'Outfit', 'Inter', system-ui, sans-serif;
 }

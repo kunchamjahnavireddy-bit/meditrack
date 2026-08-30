@@ -18,29 +18,36 @@
       --text-muted: #64748b;
       --border-color: #e2e8f0;
       --shadow-subtle: 0 4px 15px rgba(0, 0, 0, 0.04);
-      --shadow-hover: 0 12px 30px -8px rgba(2, 132, 199, 0.15);
+      --shadow-hover: 0 15px 35px -8px rgba(2, 132, 199, 0.15);
     }
 
-    html { scroll-behavior: smooth; }
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+      background-color: #ffffff !important;
+    }
 
-    body {
-      background-color: var(--bg-slate-light);
+    body.landing-page-body {
+      display: block !important;
       color: var(--text-body);
       font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      margin: 0;
-      padding: 0;
       line-height: 1.6;
     }
 
-    /* Navigation Bar */
+    /* Full-Width Navigation Bar */
     .landing-nav {
-      background: rgba(255, 255, 255, 0.96);
+      width: 100% !important;
+      background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
       z-index: 1000;
       padding: 1.1rem 2rem;
+      box-sizing: border-box;
       box-shadow: var(--shadow-subtle);
     }
     .nav-container {
@@ -49,6 +56,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      width: 100%;
     }
     .nav-links {
       display: flex;
@@ -89,11 +97,13 @@
       box-shadow: var(--shadow-subtle);
     }
 
-    /* Hero Section */
+    /* Full Width Hero Section */
     .hero-section {
+      width: 100% !important;
       padding: 5rem 2rem;
       background: linear-gradient(180deg, #e0f2fe 0%, #ffffff 100%);
       border-bottom: 1px solid var(--border-color);
+      box-sizing: border-box;
     }
     .hero-container {
       max-width: 1280px;
@@ -102,6 +112,7 @@
       grid-template-columns: 1.1fr 0.9fr;
       gap: 3.5rem;
       align-items: center;
+      width: 100%;
     }
     .hero-badge {
       display: inline-flex;
@@ -123,7 +134,7 @@
       letter-spacing: -0.03em;
       line-height: 1.15;
       color: var(--text-heading);
-      margin-bottom: 1.25rem;
+      margin: 0 0 1.25rem 0;
     }
     .hero-heading span { color: var(--primary-blue); }
     .hero-desc {
@@ -138,12 +149,15 @@
       gap: 1rem;
       flex-wrap: wrap;
     }
+
+    /* Hero Image Container */
     .hero-img-card {
-      position: relative;
+      width: 100%;
       border-radius: 24px;
       overflow: hidden;
       box-shadow: var(--shadow-hover);
       border: 6px solid #ffffff;
+      background: #f1f5f9;
     }
     .hero-img-card img {
       width: 100%;
@@ -152,9 +166,17 @@
       object-fit: cover;
     }
 
-    /* Section Styling */
-    .section-padding { padding: 5rem 2rem; }
-    .section-container { max-width: 1280px; margin: 0 auto; }
+    /* Section Layouts */
+    .section-block {
+      width: 100% !important;
+      padding: 5rem 2rem;
+      box-sizing: border-box;
+    }
+    .section-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
     .section-header { text-align: center; margin-bottom: 3.5rem; }
     .section-tag {
       color: var(--primary-blue);
@@ -177,11 +199,12 @@
       margin: 0;
     }
 
-    /* Cards Grid */
+    /* Grid Layouts */
     .card-grid-3 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 2rem;
+      width: 100%;
     }
     .service-card {
       background: var(--bg-white);
@@ -226,32 +249,34 @@
     }
     .doctor-img {
       width: 100%;
-      height: 240px;
+      height: 250px;
       object-fit: cover;
       display: block;
       border-bottom: 1px solid var(--border-color);
     }
 
-    /* Contact Form */
+    /* Contact Form Layout */
     .contact-grid {
       display: grid;
       grid-template-columns: 1fr 1.2fr;
       gap: 3rem;
       align-items: flex-start;
+      width: 100%;
     }
 
-    /* Responsive Queries */
+    /* Responsive Breakpoints */
     @media (max-width: 992px) {
       .hero-container { grid-template-columns: 1fr; text-align: center; }
       .hero-desc { margin-left: auto; margin-right: auto; }
       .hero-ctas { justify-content: center; }
+      .hero-img-card img { height: 320px; }
       .nav-links { display: none; }
       .mobile-menu-btn { display: block; }
       .contact-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
-<body>
+<body class="landing-page-body">
 
 <!-- Navigation Bar -->
 <nav class="landing-nav">
@@ -339,7 +364,7 @@
 </header>
 
 <!-- About Us Section -->
-<section id="about-section" class="section-padding" style="background:#ffffff; border-bottom:1px solid var(--border-color);">
+<section id="about-section" class="section-block" style="background:#ffffff; border-bottom:1px solid var(--border-color);">
   <div class="section-container">
     <div class="contact-grid">
       <div>
@@ -376,7 +401,7 @@
 </section>
 
 <!-- Healthcare Services Section -->
-<section id="services-section" class="section-padding" style="background:#f8fafc; border-bottom:1px solid var(--border-color);">
+<section id="services-section" class="section-block" style="background:#f8fafc; border-bottom:1px solid var(--border-color);">
   <div class="section-container">
     <div class="section-header">
       <span class="section-tag">Healthcare Services</span>
@@ -443,11 +468,11 @@
 </section>
 
 <!-- Departments & Doctors Section -->
-<section id="departments-section" class="section-padding" style="background:#ffffff; border-bottom:1px solid var(--border-color);">
+<section id="departments-section" class="section-block" style="background:#ffffff; border-bottom:1px solid var(--border-color);">
   <div class="section-container">
     <div class="section-header">
       <span class="section-tag">Specialized Care</span>
-      <h2 class="section-title">Departments & Verified Physicians</h2>
+      <h2 class="section-title">Departments & Our Doctors</h2>
       <p class="section-sub">Qualified medical specialists providing expert care across hospital departments</p>
     </div>
 
@@ -457,9 +482,9 @@
       <div class="doctor-card">
         <img src="/images/meditrack_doc_cardiologist.jpg" alt="Dr. Rajesh Kumar" class="doctor-img" />
         <div style="padding:1.5rem;">
-          <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">Cardiology</h3>
+          <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">Cardiology Dept</h3>
           <p style="font-size:0.98rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Rajesh Kumar (DOC001)</p>
-          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">License: MCI-88992 • Cardiology Dept</span>
+          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">Senior Consultant • License: MCI-88992</span>
           <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
         </div>
       </div>
@@ -470,7 +495,7 @@
         <div style="padding:1.5rem;">
           <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">General Medicine</h3>
           <p style="font-size:0.98rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Sunita Rao (DOC002)</p>
-          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">License: MCI-77114 • Medicine Dept</span>
+          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">Senior Physician • License: MCI-77114</span>
           <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
         </div>
       </div>
@@ -481,7 +506,7 @@
         <div style="padding:1.5rem;">
           <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">Pediatrics & Child Care</h3>
           <p style="font-size:0.98rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Ananya Reddy (DOC003)</p>
-          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">License: MCI-66231 • Pediatrics Dept</span>
+          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">Pediatric Specialist • License: MCI-66231</span>
           <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
         </div>
       </div>
@@ -492,7 +517,7 @@
         <div style="padding:1.5rem;">
           <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-heading); margin-bottom:0.25rem;">Orthopedics & Joint Care</h3>
           <p style="font-size:0.98rem; color:var(--primary-dark); font-weight:700; margin-bottom:0.25rem;">Dr. Vikram Verma (DOC004)</p>
-          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">License: MCI-55412 • Orthopedics Dept</span>
+          <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:1.15rem;">Orthopedic Surgeon • License: MCI-55412</span>
           <a href="/register.html" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 1rem; font-size:0.85rem;">Book Consultation</a>
         </div>
       </div>
@@ -502,7 +527,7 @@
 </section>
 
 <!-- How To Use MediTrack / Role Workflows Section -->
-<section id="how-to-use-section" class="section-padding" style="background:#f8fafc; border-bottom:1px solid var(--border-color);">
+<section id="how-to-use-section" class="section-block" style="background:#f8fafc; border-bottom:1px solid var(--border-color);">
   <div class="section-container">
     <div class="section-header">
       <span class="section-tag">Role Workflows</span>
@@ -542,7 +567,7 @@
 </section>
 
 <!-- Digital Portal Access by Role Section -->
-<section class="section-padding" style="background:#ffffff; border-bottom:1px solid var(--border-color);">
+<section class="section-block" style="background:#ffffff; border-bottom:1px solid var(--border-color);">
   <div class="section-container" style="text-align:center;">
     <div class="section-header">
       <span class="section-tag">System Login Portals</span>
@@ -582,7 +607,7 @@
 </section>
 
 <!-- Contact Section -->
-<section id="contact-section" class="section-padding" style="background:#f8fafc; border-bottom:1px solid var(--border-color);">
+<section id="contact-section" class="section-block" style="background:#f8fafc; border-bottom:1px solid var(--border-color);">
   <div class="section-container">
     <div class="section-header">
       <span class="section-tag">Get In Touch</span>
@@ -644,7 +669,7 @@
 </section>
 
 <!-- Footer -->
-<footer style="background:#0f172a; color:#cbd5e1; padding:3.5rem 2rem 2rem; border-top:1px solid #1e293b;">
+<footer style="background:#0f172a; color:#cbd5e1; padding:3.5rem 2rem 2rem; border-top:1px solid #1e293b; width:100%; box-sizing:border-box;">
   <div class="section-container">
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:2.5rem; margin-bottom:2.5rem;">
       <!-- Footer Col 1 -->
