@@ -242,14 +242,34 @@ let memoryStore = {
       patientId: "PAT001",
       title: "Lipid Profile & Complete Blood Count",
       reportType: "Blood Test Report",
+      fileName: "cbc_lipid_profile_pat001.pdf",
       fileUrl: "#",
-      uploadedAt: new Date()
+      uploadedAt: new Date(Date.now() - 86400000)
     },
     {
       reportId: "REP-002",
       patientId: "PAT001",
       title: "Chest X-Ray (PA View)",
       reportType: "X-Ray",
+      fileName: "chest_xray_pat001.png",
+      fileUrl: "#",
+      uploadedAt: new Date(Date.now() - 43200000)
+    },
+    {
+      reportId: "REP-003",
+      patientId: "PAT001",
+      title: "Brain CT Scan Diagnostic Report",
+      reportType: "CT Scan",
+      fileName: "brain_ct_scan_pat001.pdf",
+      fileUrl: "#",
+      uploadedAt: new Date(Date.now() - 3600000)
+    },
+    {
+      reportId: "REP-004",
+      patientId: "PAT001",
+      title: "Lumbar Spine MRI Diagnostic Scan",
+      reportType: "MRI Scan",
+      fileName: "lumbar_mri_pat001.pdf",
       fileUrl: "#",
       uploadedAt: new Date()
     }

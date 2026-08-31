@@ -17,7 +17,7 @@ const MedicalReportSchema = new mongoose.Schema({
   },
   reportType: {
     type: String,
-    enum: ['Blood Test Report', 'X-Ray', 'Scan', 'Prescription', 'Discharge Summary', 'Other Medical Report'],
+    enum: ['CT Scan', 'MRI Scan', 'Blood Test Report', 'Lab Report', 'X-Ray', 'Scan', 'Prescription', 'Discharge Summary', 'Other Medical Report'],
     default: 'Other Medical Report'
   },
   fileUrl: {

@@ -544,31 +544,46 @@ function renderUnifiedClinicalFile(data, container) {
 
   let reportsHtml = '';
   if (reports.length > 0) {
-    reports.forEach(r => {
+    reports.forEach((r, idx) => {
+      const isLatest = (idx === 0);
       const fileTarget = (r.fileUrl && r.fileUrl !== '#') ? r.fileUrl : '#';
       const fileName = r.fileName || (r.fileUrl ? r.fileUrl.split('/').pop() : 'Document');
       const uploadDateStr = r.uploadedAt ? new Date(r.uploadedAt).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+      
+      let typeIcon = '📋';
+      const typeLower = (r.reportType || '').toLowerCase();
+      if (typeLower.includes('ct') || typeLower.includes('mri')) typeIcon = '🧠';
+      else if (typeLower.includes('blood')) typeIcon = '🩸';
+      else if (typeLower.includes('lab')) typeIcon = '🔬';
+      else if (typeLower.includes('x-ray')) typeIcon = '🩻';
 
       reportsHtml += `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid var(--border-color); border-radius:10px; padding:0.95rem 1.25rem; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.75rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:${isLatest ? '#f0f9ff' : '#ffffff'}; border:2px solid ${isLatest ? '#0284c7' : 'var(--border-color)'}; border-radius:12px; padding:1rem 1.25rem; margin-bottom:0.85rem; flex-wrap:wrap; gap:0.75rem; box-shadow:${isLatest ? '0 4px 15px rgba(2,132,199,0.1)' : 'none'};">
           <div>
-            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+            <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.35rem; flex-wrap:wrap;">
+              ${isLatest ? `<span class="badge badge-green" style="font-size:0.75rem; font-weight:800;">🆕 LATEST REPORT</span>` : ''}
               <strong style="color:var(--text-main); font-size:1.05rem;">${r.title}</strong>
-              <span class="badge badge-blue" style="font-size:0.8rem;">🏷️ ${r.reportType}</span>
+              <span class="badge badge-blue" style="font-size:0.8rem; font-weight:700;">${typeIcon} ${r.reportType}</span>
             </div>
-            <div style="font-size:0.85rem; color:var(--text-muted); display:flex; gap:1.1rem; flex-wrap:wrap; margin-top:0.25rem;">
-              <span>📄 <strong>File Name:</strong> ${fileName}</span>
+            <div style="font-size:0.85rem; color:var(--text-muted); display:flex; gap:1.25rem; flex-wrap:wrap; margin-top:0.35rem;">
+              <span>🆔 <strong>Patient ID:</strong> ${r.patientId || pat.patientId}</span>
+              <span>📄 <strong>File:</strong> ${fileName}</span>
               <span>📅 <strong>Uploaded:</strong> ${uploadDateStr}</span>
             </div>
           </div>
-          <button onclick="if('${fileTarget}' !== '#') { window.open('${fileTarget}', '_blank'); } else { showToast('Report file link unavailable', 'warning'); }" class="btn btn-secondary" style="min-height:36px; padding:0.3rem 0.75rem; font-size:0.85rem;">
-            📂 View Report
-          </button>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button type="button" onclick="useReportInConsultation('${escapeQuotes(r.title)}', '${escapeQuotes(r.reportType)}', '${escapeQuotes(fileName)}')" class="btn btn-secondary" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.82rem; background:#f0fdf4; color:#15803d; border-color:#86efac; font-weight:700;">
+              📝 Reference in Consultation
+            </button>
+            <button type="button" onclick="if('${fileTarget}' !== '#') { window.open('${fileTarget}', '_blank'); } else { showToast('Report file preview/download unavailable', 'warning'); }" class="btn btn-primary" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.82rem; font-weight:700;">
+              📂 View / Download Report
+            </button>
+          </div>
         </div>
       `;
     });
   } else {
-    reportsHtml = `<p style="color:var(--text-muted);">No uploaded medical reports found.</p>`;
+    reportsHtml = `<p style="color:var(--text-muted); font-size:0.95rem; padding:0.5rem 0;">No uploaded medical reports found for this patient.</p>`;
   }
 
   container.innerHTML = `
@@ -866,4 +881,24 @@ function scrollSection(id) {
 function escapeJs(str) {
   if (!str) return '';
   return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function escapeQuotes(str) {
+  return escapeJs(str);
+}
+
+function useReportInConsultation(reportTitle, reportType, fileName) {
+  const notesDiagnosis = document.getElementById('notes_diagnosis');
+  const notesTreatment = document.getElementById('notes_treatment');
+  
+  if (notesDiagnosis && !notesDiagnosis.value) {
+    notesDiagnosis.value = `Evaluation based on ${reportType}: ${reportTitle}`;
+  }
+  if (notesTreatment) {
+    const existing = notesTreatment.value ? notesTreatment.value + '\n\n' : '';
+    notesTreatment.value = existing + `[Diagnostic Report Reference]: Reviewed ${reportType} ("${reportTitle}", File: ${fileName}). Findings integrated into treatment plan.`;
+  }
+  
+  toggleNotesModal(true);
+  showToast(`Referenced "${reportTitle}" in Consultation Notes!`, 'info');
 }
