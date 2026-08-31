@@ -343,6 +343,125 @@
       transform: scale(1.08);
     }
 
+    /* Horizontal Timeline Process Styling (Section 1) */
+    .timeline-process-grid {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      position: relative;
+    }
+    .timeline-step-card {
+      flex: 1;
+      min-width: 170px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 1.5rem 1.15rem;
+      box-shadow: var(--shadow-subtle);
+      position: relative;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .timeline-step-card:hover {
+      transform: translateY(-4px);
+      border-color: #7dd3fc;
+      box-shadow: var(--shadow-hover);
+    }
+    .timeline-step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.75rem;
+    }
+    .timeline-icon {
+      font-size: 2.2rem;
+      margin-bottom: 0.75rem;
+    }
+    .timeline-step-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      margin: 0 0 0.35rem 0;
+    }
+    .timeline-step-desc {
+      font-size: 0.85rem;
+      color: var(--text-body);
+      line-height: 1.45;
+      margin: 0;
+    }
+    .timeline-connector {
+      font-size: 1.25rem;
+      color: #0284c7;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* Portal Role Selection Card Styling (Section 2) */
+    .portal-role-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 2.25rem 1.75rem;
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .portal-role-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+      border-color: #bae6fd;
+    }
+    .portal-card-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin-bottom: 1.25rem;
+    }
+    .portal-card-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem 0;
+    }
+    .portal-card-desc {
+      font-size: 0.95rem;
+      color: var(--text-body);
+      line-height: 1.55;
+      margin: 0 0 1.25rem 0;
+    }
+    .portal-card-link {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #0284c7;
+      margin-top: auto;
+    }
+
+    @media (max-width: 992px) {
+      .timeline-process-grid {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .timeline-connector {
+        text-align: center;
+        transform: rotate(90deg);
+        margin: 0.25rem 0;
+      }
+    }
+
     @media (max-width: 1200px) {
       .carousel-card { flex: 0 0 calc(33.333% - 1rem); }
     }
@@ -809,81 +928,102 @@
   </div>
 </section>
 
-<!-- How To Use MediTrack / Role Workflows Section -->
+<!-- SECTION 1: How MediTrack Works (Horizontal Step-by-Step Timeline) -->
 <section id="how-to-use-section" class="section-block" style="background:#f8fafc; border-bottom:1px solid var(--border-color);">
   <div class="section-container">
     <div class="section-header">
-      <span class="section-tag">Role Workflows</span>
-      <h2 class="section-title">How to Use MediTrack</h2>
-      <p class="section-sub">Core system workflows organized by role</p>
+      <span class="section-tag">HOW MEDITRACK WORKS</span>
+      <h2 class="section-title">From Appointment to Better Care</h2>
+      <p class="section-sub">Follow the seamless digital healthcare journey in 5 simple steps</p>
     </div>
 
-    <div class="card-grid-3">
-      <!-- Role 1: Patient -->
-      <div class="service-card">
-        <div class="icon-box">👤</div>
-        <h3 style="font-size:1.3rem; font-weight:800; color:var(--primary-dark); margin-bottom:0.5rem;">1. Patient Workflow</h3>
-        <p style="font-size:1.05rem; color:var(--text-body); font-weight:600; line-height:1.6; margin:0;">
-          Register/Login → Manage Profile → Book Appointments → View Prescriptions
-        </p>
+    <!-- Horizontal Step-by-Step Timeline -->
+    <div class="timeline-process-grid">
+      
+      <!-- Step 1 -->
+      <div class="timeline-step-card">
+        <div class="timeline-step-num">01</div>
+        <div class="timeline-icon">📝</div>
+        <h3 class="timeline-step-title">Register / Login</h3>
+        <p class="timeline-step-desc">Create your patient account or login securely to access your digital medical portal.</p>
       </div>
 
-      <!-- Role 2: Doctor -->
-      <div class="service-card">
-        <div class="icon-box" style="background:#f3e8ff; color:#9333ea;">🩺</div>
-        <h3 style="font-size:1.3rem; font-weight:800; color:#7e22ce; margin-bottom:0.5rem;">2. Doctor Workflow</h3>
-        <p style="font-size:1.05rem; color:var(--text-body); font-weight:600; line-height:1.6; margin:0;">
-          Login → View Appointments → Consult Patients → Add Diagnosis & Prescriptions
-        </p>
+      <div class="timeline-connector">➔</div>
+
+      <!-- Step 2 -->
+      <div class="timeline-step-card">
+        <div class="timeline-step-num">02</div>
+        <div class="timeline-icon">📅</div>
+        <h3 class="timeline-step-title">Book Appointment</h3>
+        <p class="timeline-step-desc">Browse specialist doctors, select your preferred date, and pick an open time slot.</p>
       </div>
 
-      <!-- Role 3: Administrator -->
-      <div class="service-card">
-        <div class="icon-box" style="background:#fee2e2; color:#dc2626;">⚙️</div>
-        <h3 style="font-size:1.3rem; font-weight:800; color:#991b1b; margin-bottom:0.5rem;">3. Administrator Workflow</h3>
-        <p style="font-size:1.05rem; color:var(--text-body); font-weight:600; line-height:1.6; margin:0;">
-          Login → Manage Users → Manage System
-        </p>
+      <div class="timeline-connector">➔</div>
+
+      <!-- Step 3 -->
+      <div class="timeline-step-card">
+        <div class="timeline-step-num">03</div>
+        <div class="timeline-icon">🩺</div>
+        <h3 class="timeline-step-title">Doctor Consultation</h3>
+        <p class="timeline-step-desc">Meet with qualified physicians for in-person or digital clinical consultations.</p>
       </div>
+
+      <div class="timeline-connector">➔</div>
+
+      <!-- Step 4 -->
+      <div class="timeline-step-card">
+        <div class="timeline-step-num">04</div>
+        <div class="timeline-icon">🔬</div>
+        <h3 class="timeline-step-title">Diagnosis & Treatment</h3>
+        <p class="timeline-step-desc">Receive clinical evaluation, lab diagnostic reports, and personalized treatment plans.</p>
+      </div>
+
+      <div class="timeline-connector">➔</div>
+
+      <!-- Step 5 -->
+      <div class="timeline-step-card">
+        <div class="timeline-step-num">05</div>
+        <div class="timeline-icon">💊</div>
+        <h3 class="timeline-step-title">Prescription</h3>
+        <p class="timeline-step-desc">Access digital prescriptions with exact dosage, timing, and pharmacy instructions.</p>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- Digital Portal Access by Role Section -->
+<!-- SECTION 2: Choose Your MediTrack Portal (3 Clean Role Cards) -->
 <section class="section-block" style="background:#ffffff; border-bottom:1px solid var(--border-color);">
   <div class="section-container" style="text-align:center;">
     <div class="section-header">
-      <span class="section-tag">System Login Portals</span>
-      <h2 class="section-title">Digital Portal Access by Role</h2>
-      <p class="section-sub">Select your role to log in and access MediTrack:</p>
+      <span class="section-tag">CHOOSE YOUR MEDITRACK PORTAL</span>
+      <h2 class="section-title">Access MediTrack Your Way</h2>
+      <p class="section-sub">Select your account portal to sign in and access digital care management</p>
     </div>
 
     <div class="card-grid-3">
-      <!-- Role 1: Patient -->
-      <a href="/login.html" class="service-card" style="text-decoration:none; text-align:center;">
-        <div style="font-size:3rem; margin-bottom:0.5rem;">👤</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:var(--primary-dark); margin-bottom:0.5rem;">Patient Portal</h3>
-        <p style="font-size:0.95rem; color:var(--text-body); margin:0;">
-          Register/Login → Manage Profile → Book Appointments → View Prescriptions
-        </p>
+      <!-- Role 1: Patient Card -->
+      <a href="/login.html" class="portal-role-card" style="text-decoration:none;">
+        <div class="portal-card-icon" style="background:#e0f2fe; color:#0284c7;">👤</div>
+        <h3 class="portal-card-title" style="color:var(--primary-dark);">Patient</h3>
+        <p class="portal-card-desc">Manage your profile, appointments, medical records and prescriptions.</p>
+        <div class="portal-card-link">Access Patient Portal ➔</div>
       </a>
 
-      <!-- Role 2: Doctor -->
-      <a href="/login.html" class="service-card" style="text-decoration:none; text-align:center;">
-        <div style="font-size:3rem; margin-bottom:0.5rem;">🩺</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:#7e22ce; margin-bottom:0.5rem;">Doctor Portal</h3>
-        <p style="font-size:0.95rem; color:var(--text-body); margin:0;">
-          Login → View Appointments → Consult Patients → Add Diagnosis & Prescriptions
-        </p>
+      <!-- Role 2: Doctor Card -->
+      <a href="/login.html" class="portal-role-card" style="text-decoration:none;">
+        <div class="portal-card-icon" style="background:#f3e8ff; color:#9333ea;">🩺</div>
+        <h3 class="portal-card-title" style="color:#7e22ce;">Doctor</h3>
+        <p class="portal-card-desc">Manage appointments, consultations, patients and prescriptions.</p>
+        <div class="portal-card-link" style="color:#7e22ce;">Access Doctor Portal ➔</div>
       </a>
 
-      <!-- Role 3: Administrator -->
-      <a href="/login.html" class="service-card" style="text-decoration:none; text-align:center;">
-        <div style="font-size:3rem; margin-bottom:0.5rem;">⚙️</div>
-        <h3 style="font-size:1.25rem; font-weight:800; color:#991b1b; margin-bottom:0.5rem;">Administrator Portal</h3>
-        <p style="font-size:0.95rem; color:var(--text-body); margin:0;">
-          Login → Manage Users → Manage System
-        </p>
+      <!-- Role 3: Administrator Card -->
+      <a href="/login.html" class="portal-role-card" style="text-decoration:none;">
+        <div class="portal-card-icon" style="background:#fee2e2; color:#dc2626;">⚙️</div>
+        <h3 class="portal-card-title" style="color:#991b1b;">Administrator</h3>
+        <p class="portal-card-desc">Manage users, system activities and reports.</p>
+        <div class="portal-card-link" style="color:#991b1b;">Access Admin Portal ➔</div>
       </a>
     </div>
   </div>
