@@ -75,13 +75,11 @@
             </div>
           </div>
 
-          <!-- Hospital & Appts Stat -->
+          <!-- Today's Appts Stat -->
           <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 1.5rem;">
-            <div style="font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Hospitals / Today's Appts</div>
-            <div style="font-size: 2.5rem; font-weight: 800; color: #fff; margin: 0.35rem 0;">
-              <span id="stat-hospitals-total">-</span> <span style="font-size: 1.2rem; color: #94a3b8;">/</span> <span id="stat-appts-today" style="color:#38bdf8;">-</span>
-            </div>
-            <div style="font-size: 0.85rem; color: #cbd5e1;">Hospitals Registered & Today's Appointments</div>
+            <div style="font-size: 0.9rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Today's Appointments</div>
+            <div id="stat-appts-today" style="font-size: 2.5rem; font-weight: 800; color: #38bdf8; margin: 0.35rem 0;">-</div>
+            <div style="font-size: 0.85rem; color: #cbd5e1;">Scheduled Appointments Booked Today</div>
           </div>
         </div>
       </div>
@@ -91,7 +89,6 @@
         <button onclick="scrollSection('admin-patients-section')" class="btn btn-secondary" style="min-height:42px; font-size:0.9rem;">👥 Patient Management</button>
         <button onclick="scrollSection('admin-doctors-section')" class="btn btn-secondary" style="min-height:42px; font-size:0.9rem;">🩺 Doctor Management</button>
         <button onclick="scrollSection('admin-appointments-section')" class="btn btn-secondary" style="min-height:42px; font-size:0.9rem;">📅 Appointments Catalog</button>
-        <button onclick="scrollSection('admin-hospitals-section')" class="btn btn-secondary" style="min-height:42px; font-size:0.9rem;">🏥 Hospital Network</button>
         <button onclick="scrollSection('admin-audit-section')" class="btn btn-secondary" style="min-height:42px; font-size:0.9rem;">📜 Security Audit Logs</button>
       </div>
 
@@ -216,39 +213,7 @@
         </div>
       </div>
 
-      <!-- 5. Hospital / Clinic Management Section -->
-      <div id="admin-hospitals-section" class="card">
-        <div class="card-header">
-          <div>
-            <h2 class="card-title">🏥 Hospital / Clinic Network Management</h2>
-            <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">Register and manage healthcare facilities in the MediTrack network</p>
-          </div>
-          <button onclick="toggleHospitalModal(true)" class="btn btn-primary" style="min-height:42px; font-size:0.9rem;">
-            + Register Hospital
-          </button>
-        </div>
-
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Hospital ID</th>
-                <th>Facility Name</th>
-                <th>Address</th>
-                <th>Location</th>
-                <th>Contact Info</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="admin-hospitals-tbody">
-              <tr><td colspan="7" style="text-align:center; padding:2rem;">Loading hospitals...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 6. Role Permissions Matrix Section -->
+      <!-- 5. Role Permissions Matrix Section -->
       <div class="card">
         <div class="card-header">
           <h2 class="card-title">🔒 Role-Based Access Control (RBAC) Matrix</h2>
@@ -437,46 +402,7 @@
   </div>
 </div>
 
-<!-- Modal 4: Create Hospital -->
-<div id="create-hospital-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center; padding:1.5rem;">
-  <div style="background:#fff; width:100%; max-width:600px; border-radius:20px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); position:relative;">
-    <button onclick="toggleHospitalModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>
-    <div style="border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1.5rem;">
-      <h2 style="font-size:1.5rem; font-weight:800; color:var(--text-main);">🏥 Register Hospital / Clinic</h2>
-      <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0.25rem;">Add a new healthcare facility to the MediTrack network</p>
-    </div>
-    <form id="create-hospital-form">
-      <div class="form-group">
-        <label class="form-label" for="hosp_name">Facility Name <span class="required">*</span></label>
-        <input type="text" id="hosp_name" class="form-control" required placeholder="e.g. City Care Specialty Hospital">
-      </div>
-      <div class="form-group" style="margin-top:1rem;">
-        <label class="form-label" for="hosp_address">Full Address <span class="required">*</span></label>
-        <input type="text" id="hosp_address" class="form-control" required placeholder="e.g. 45 Park Road, Kurnool">
-      </div>
-      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
-        <div class="form-group">
-          <label class="form-label" for="hosp_location">Location / City <span class="required">*</span></label>
-          <input type="text" id="hosp_location" class="form-control" required value="Kurnool">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="hosp_phone">Contact Phone <span class="required">*</span></label>
-          <input type="text" id="hosp_phone" class="form-control" required placeholder="+91 8518 220011">
-        </div>
-      </div>
-      <div class="form-group" style="margin-top:1rem;">
-        <label class="form-label" for="hosp_email">Contact Email <span class="required">*</span></label>
-        <input type="email" id="hosp_email" class="form-control" required placeholder="info@citycare.org">
-      </div>
-      <div style="margin-top:1.75rem; display:flex; justify-content:flex-end; gap:1rem;">
-        <button type="button" onclick="toggleHospitalModal(false)" class="btn btn-secondary">Cancel</button>
-        <button type="submit" class="btn btn-primary">Register Facility ➔</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Modal 5: Account Deletion Confirmation Modal -->
+<!-- Modal 4: Account Deletion Confirmation Modal -->
 <div id="delete-account-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.75); backdrop-filter:blur(6px); z-index:1100; align-items:center; justify-content:center; padding:1.5rem;">
   <div style="background:#fff; width:100%; max-width:580px; border-radius:24px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.4); position:relative; border:1px solid #fecdd3;">
     <button onclick="toggleDeleteModal(false)" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted);">✕</button>

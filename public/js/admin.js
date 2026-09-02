@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchAdminPatients();
   fetchAdminDoctors();
   fetchAdminAppointments();
-  fetchAdminHospitals();
   fetchAdminAuditLogs();
 
   initAdminFormHandlers();
@@ -39,8 +38,7 @@ async function fetchAdminSystemOverview() {
     setTxt('stat-doctors-suspended', data.doctors.suspended);
     setTxt('stat-doctors-deleted', data.doctors.deleted || 0);
 
-    // Hospitals & Appointments
-    setTxt('stat-hospitals-total', data.hospitals.total);
+    // Today's Appointments
     setTxt('stat-appts-today', data.todaysAppointments);
 
   } catch (err) {
@@ -408,96 +406,6 @@ function initDeleteAccountFormHandler() {
 
     } catch (err) {
       console.error('Error deleting account:', err);
-      showToast('Server communication error.', 'error');
-    }
-  });
-}
-
-// ----------------------------------------------------
-// HOSPITAL NETWORK MANAGEMENT
-// ----------------------------------------------------
-async function fetchAdminHospitals() {
-  const tbody = document.getElementById('admin-hospitals-tbody');
-  if (!tbody) return;
-
-  try {
-    const res = await fetchWithAuth('/api/admin/hospitals');
-    if (!res.ok) return;
-
-    const hospitals = await res.json();
-    if (!hospitals || hospitals.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:2rem;">No hospitals registered in network.</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = '';
-    hospitals.forEach(h => {
-      tbody.innerHTML += `
-        <tr>
-          <td><strong style="color:var(--primary);">${h.hospitalId}</strong></td>
-          <td><strong>${h.name}</strong></td>
-          <td>${h.address}</td>
-          <td>📍 <strong>${h.location}</strong></td>
-          <td>
-            <div style="font-size:0.85rem;">📞 ${h.phone}</div>
-            <div style="font-size:0.8rem; color:var(--text-muted);">✉️ ${h.email}</div>
-          </td>
-          <td><span class="badge badge-green">${h.status}</span></td>
-          <td>
-            <button onclick="showToast('Hospital Facility Active', 'info')" class="btn btn-secondary" style="min-height:32px; padding:0.25rem 0.65rem; font-size:0.8rem;">
-              Manage ⚙️
-            </button>
-          </td>
-        </tr>
-      `;
-    });
-
-  } catch (err) {
-    console.error('Error fetching admin hospitals:', err);
-  }
-}
-
-function toggleHospitalModal(show) {
-  const modal = document.getElementById('create-hospital-modal');
-  if (modal) modal.style.display = show ? 'flex' : 'none';
-}
-
-function initAdminFormHandlers() {
-  const form = document.getElementById('create-hospital-form');
-  if (!form) return;
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const payload = {
-      name: document.getElementById('hosp_name').value.trim(),
-      address: document.getElementById('hosp_address').value.trim(),
-      location: document.getElementById('hosp_location').value.trim(),
-      phone: document.getElementById('hosp_phone').value.trim(),
-      email: document.getElementById('hosp_email').value.trim()
-    };
-
-    try {
-      const res = await fetchWithAuth('/api/admin/hospitals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        showToast(data.error || 'Failed to register hospital facility.', 'error');
-        return;
-      }
-
-      showToast(`Hospital Facility '${data.hospital.name}' registered successfully!`, 'success');
-      toggleHospitalModal(false);
-      form.reset();
-      fetchAdminHospitals();
-      fetchAdminSystemOverview();
-
-    } catch (err) {
-      console.error('Error creating hospital:', err);
       showToast('Server communication error.', 'error');
     }
   });
