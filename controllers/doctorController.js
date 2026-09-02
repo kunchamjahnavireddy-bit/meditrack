@@ -705,7 +705,10 @@ exports.getDoctors = async (req, res) => {
     const patientLoc = (req.query.location || req.query.patientLocation || '').trim().toUpperCase();
 
     if (getIsConnectedToMongo()) {
-      let doctors = await Doctor.find({ verificationStatus: 'verified' }).select('-password');
+      let doctors = await Doctor.find({ accountStatus: { $ne: 'deleted' } }).select('-password');
+      if (!doctors || doctors.length === 0) {
+        doctors = await Doctor.find({}).select('-password');
+      }
       if (patientLoc) {
         doctors.sort((a, b) => {
           const locA = (a.location || '').toUpperCase();
@@ -719,7 +722,7 @@ exports.getDoctors = async (req, res) => {
       }
       return res.json(doctors);
     } else {
-      let doctors = (memoryStore.doctors || []).filter(d => d.verificationStatus === 'verified');
+      let doctors = (memoryStore.doctors || []).filter(d => d.accountStatus !== 'deleted');
       if (patientLoc) {
         doctors = [...doctors].sort((a, b) => {
           const locA = (a.location || '').toUpperCase();

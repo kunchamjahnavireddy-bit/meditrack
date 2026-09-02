@@ -180,15 +180,15 @@ async function fetchAdminDoctors() {
 
       tbody.innerHTML += `
         <tr style="${st === 'deleted' ? 'opacity:0.75; background:#f8fafc;' : ''}">
-          <td><strong style="color:var(--primary);">${d.doctorId}</strong></td>
+          <td><strong style="color:var(--primary); font-weight:800;">${d.doctorId}</strong></td>
           <td><strong>${d.name}</strong></td>
+          <td><span style="font-size:0.88rem; color:var(--text-body); font-weight:600;">${d.email || (d.doctorId.toLowerCase() + '@meditrack.org')}</span></td>
           <td>
-            <strong>${d.specialty}</strong> <br>
-            <small style="color:var(--text-muted);">${d.department || 'Medicine'}</small>
+            <strong>${d.specialty || 'General Medicine'}</strong> <br>
+            <small style="color:var(--text-muted); font-weight:600;">${d.department || d.specialty || 'Medicine'}</small>
           </td>
           <td><code>${d.medicalLicenseNumber || 'MCI-REG'}</code></td>
-          <td><span class="badge ${licSt === 'active' ? 'badge-green' : 'badge-red'}">${licSt}</span></td>
-          <td>📍 <strong>${d.location || 'Kurnool'}</strong></td>
+          <td>📍 <strong>${d.location || 'Hospital Network'}</strong></td>
           <td><span class="badge ${badgeClass}" style="text-transform:capitalize; ${badgeStyle}">${st}</span></td>
           <td>
             <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
