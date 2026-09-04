@@ -8,6 +8,14 @@ const { authenticateUser, requireRole, enforcePatientDataIsolation, enforceDocto
 // GET next patient ID (Public for Registration preview)
 router.get('/next-id', patientController.getNextPatientId);
 
+// GET authenticated patient's own profile details
+router.get(
+  '/me',
+  authenticateUser,
+  requireRole(['patient']),
+  patientController.getPatientById
+);
+
 // GET authenticated patient's own appointments
 router.get(
   '/me/appointments',

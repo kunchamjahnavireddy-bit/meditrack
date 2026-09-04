@@ -131,17 +131,69 @@ function selectDoctorForBooking(doctorId) {
   }
 }
 
+function renderPatientInfoCard(pat) {
+  if (!pat) return;
+  const idEl = document.getElementById('display_patient_id');
+  const nameEl = document.getElementById('display_patient_name');
+  const ageGenderEl = document.getElementById('display_patient_age_gender');
+  const phoneEl = document.getElementById('display_patient_phone');
+  const emailEl = document.getElementById('display_patient_email');
+  const addrEl = document.getElementById('display_patient_address');
+  const patSelect = document.getElementById('patient_id');
+
+  if (idEl) idEl.textContent = pat.patientId || 'PAT-N/A';
+  if (nameEl) nameEl.textContent = pat.fullName || '-';
+  if (ageGenderEl) ageGenderEl.textContent = `${pat.age || 'N/A'} Yrs • ${pat.gender || 'N/A'}`;
+  if (phoneEl) phoneEl.textContent = pat.phone || '-';
+  if (emailEl) emailEl.textContent = pat.email || '-';
+  if (addrEl) addrEl.textContent = pat.address || pat.patientLocation || '-';
+
+  if (patSelect) {
+    if (!patSelect.querySelector(`option[value="${pat.patientId}"]`)) {
+      const opt = document.createElement('option');
+      opt.value = pat.patientId;
+      opt.textContent = `${pat.patientId} - ${pat.fullName}`;
+      patSelect.appendChild(opt);
+    }
+    patSelect.value = pat.patientId;
+  }
+}
+
 async function loadDropdownData() {
   try {
-    const resPat = await fetchWithAuth('/api/patients');
-    if (resPat.ok) {
-      const patients = await resPat.json();
-      const patSelect = document.getElementById('patient_id');
-      if (patSelect && Array.isArray(patients)) {
-        patSelect.innerHTML = '<option value="">-- Choose Registered Patient --</option>';
-        patients.forEach(pat => {
-          patSelect.innerHTML += `<option value="${pat.patientId}">${pat.patientId} - ${pat.fullName} (${pat.phone})</option>`;
-        });
+    const user = getCurrentUser();
+    const isPatient = user && user.role === 'patient';
+    const patientGroup = document.getElementById('patient-select-group');
+
+    if (isPatient) {
+      if (patientGroup) patientGroup.style.display = 'none';
+      const resMe = await fetchWithAuth('/api/patients/me');
+      if (resMe.ok) {
+        const myProfile = await resMe.json();
+        renderPatientInfoCard(myProfile);
+      }
+    } else {
+      if (patientGroup) patientGroup.style.display = 'block';
+      const resPat = await fetchWithAuth('/api/patients');
+      if (resPat.ok) {
+        const patients = await resPat.json();
+        const patSelect = document.getElementById('patient_id');
+        if (patSelect && Array.isArray(patients)) {
+          patSelect.innerHTML = '<option value="">-- Choose Registered Patient --</option>';
+          patients.forEach(pat => {
+            patSelect.innerHTML += `<option value="${pat.patientId}">${pat.patientId} - ${pat.fullName} (${pat.phone})</option>`;
+          });
+
+          patSelect.addEventListener('change', async () => {
+            const selId = patSelect.value;
+            if (!selId) return;
+            const resSingle = await fetchWithAuth(`/api/patients/${selId}`);
+            if (resSingle.ok) {
+              const singlePat = await resSingle.json();
+              renderPatientInfoCard(singlePat);
+            }
+          });
+        }
       }
     }
 
@@ -156,6 +208,14 @@ async function loadDropdownData() {
         });
       }
       renderAllDoctorsGrid(doctors);
+
+      // Check URL search params for ?doctor=DOCxxx
+      const urlParams = new URLSearchParams(window.location.search);
+      const preDocId = urlParams.get('doctor');
+      if (preDocId && docSelect) {
+        docSelect.value = preDocId;
+        docSelect.dispatchEvent(new Event('change'));
+      }
     }
   } catch (err) {
     console.error('Error loading dropdown data:', err);
@@ -280,7 +340,12 @@ function initAppointmentBookingHandler() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const patientId = document.getElementById('patient_id') ? document.getElementById('patient_id').value : null;
+    const user = getCurrentUser();
+    let patientId = document.getElementById('patient_id') ? document.getElementById('patient_id').value : null;
+    if (!patientId && user && (user.patientId || user.loginId)) {
+      patientId = user.patientId || user.loginId;
+    }
+
     const doctorId = document.getElementById('doctor_id').value;
     const appointmentDate = document.getElementById('appointment_date').value;
     const appointmentTime = document.getElementById('appointment_time').value;
@@ -305,9 +370,10 @@ function initAppointmentBookingHandler() {
         return;
       }
 
-      showToast('Appointment Booked Successfully!', 'success');
+      showToast(`Appointment #APT${data.appointment ? data.appointment.appointmentId : ''} Booked Successfully!`, 'success');
       form.reset();
-      loadAppointmentsAgenda(getCurrentUser().role);
+      loadDropdownData();
+      loadAppointmentsAgenda(user ? user.role : 'patient');
       document.querySelectorAll('.slot-card').forEach(c => c.classList.remove('selected'));
       const slotNotice = document.getElementById('slot-notice');
       if (slotNotice) slotNotice.style.display = 'none';

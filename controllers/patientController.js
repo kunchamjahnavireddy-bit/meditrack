@@ -349,21 +349,28 @@ exports.getPatients = async (req, res) => {
   }
 };
 
-// GET /api/patients/:patientId
+// GET /api/patients/:patientId OR /api/patients/me
 exports.getPatientById = async (req, res) => {
   try {
-    const { patientId } = req.params;
+    let pid = req.params.patientId;
+    if (!pid || pid.toLowerCase() === 'me') {
+      pid = (req.user && (req.user.patientId || req.user.loginId)) || '';
+    }
+    if (!pid) {
+      return res.status(400).json({ error: "Patient ID is required." });
+    }
+    pid = pid.trim().toUpperCase();
 
     if (getIsConnectedToMongo()) {
-      const patient = await Patient.findOne({ patientId: patientId.toUpperCase() }).select('-password');
+      const patient = await Patient.findOne({ patientId: new RegExp(`^${pid}$`, 'i') }).select('-password');
       if (!patient) {
-        return res.status(404).json({ error: `Patient ID ${patientId} not found.` });
+        return res.status(404).json({ error: `Patient ID ${pid} not found in database.` });
       }
       return res.json(patient);
     } else {
-      const patient = memoryStore.patients.find(p => p.patientId.toUpperCase() === patientId.toUpperCase());
+      const patient = (memoryStore.patients || []).find(p => p.patientId.toUpperCase() === pid);
       if (!patient) {
-        return res.status(404).json({ error: `Patient ID ${patientId} not found.` });
+        return res.status(404).json({ error: `Patient ID ${pid} not found.` });
       }
       return res.json(patient);
     }
