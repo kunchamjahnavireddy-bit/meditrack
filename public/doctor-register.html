@@ -131,6 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const password = document.getElementById('doc_password').value.trim();
     const confirmPassword = document.getElementById('doc_confirm_password').value.trim();
 
+    const licensePattern = /^LIC-[A-Za-z0-9]+-\d{5}$/i;
+    if (!licensePattern.test(medicalLicenseNumber)) {
+      showToast('Invalid License Number format. Format must be LIC-[SPECIALIZATION]-[5 DIGITS] (e.g. LIC-PULMO-99881).', 'error');
+      return;
+    }
+
     if (password !== confirmPassword) {
       showToast('Passwords do not match.', 'error');
       return;

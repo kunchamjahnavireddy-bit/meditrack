@@ -571,6 +571,7 @@ exports.completeAppointment = async (req, res) => {
 };
 
 // Public & Admin Endpoints
+// Public & Admin Endpoints
 exports.registerDoctor = async (req, res) => {
   try {
     const { name, specialty, email, phone, department, location, medicalLicenseNumber, password } = req.body;
@@ -578,19 +579,56 @@ exports.registerDoctor = async (req, res) => {
       return res.status(400).json({ error: "Name, Specialty, Email, License Number, and Password are required." });
     }
 
+    const cleanLicense = medicalLicenseNumber.trim().toUpperCase();
+    const licensePattern = /^LIC-[A-Z0-9]+-\d{5}$/i;
+    if (!licensePattern.test(cleanLicense)) {
+      return res.status(400).json({ 
+        error: "Invalid Medical License format. Format must be LIC-[SPECIALIZATION]-[5 DIGITS] (e.g. LIC-PULMO-99881)." 
+      });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Check for existing doctor with same email or license number
+    if (getIsConnectedToMongo()) {
+      const existingDoc = await Doctor.findOne({
+        $or: [
+          { email: cleanEmail },
+          { medicalLicenseNumber: cleanLicense }
+        ]
+      });
+      if (existingDoc) {
+        if (existingDoc.email === cleanEmail) {
+          return res.status(400).json({ error: "A doctor with this Email Address is already registered." });
+        }
+        if (existingDoc.medicalLicenseNumber === cleanLicense) {
+          return res.status(400).json({ error: "A doctor with this Medical License Number is already registered." });
+        }
+      }
+    } else {
+      const existingDoc = (memoryStore.doctors || []).find(d => 
+        (d.email || '').toLowerCase() === cleanEmail || (d.medicalLicenseNumber || '').toUpperCase() === cleanLicense
+      );
+      if (existingDoc) {
+        return res.status(400).json({ error: "A doctor with this Email or License Number is already registered." });
+      }
+    }
+
     const doctorId = await generateNextDoctorId();
     const hashedPassword = hashPassword(password.trim());
+
+    const docPhone = (phone && phone.trim()) ? phone.trim() : '+91 98765 43210';
 
     const newDoctor = {
       doctorId,
       password: hashedPassword,
       name: name.trim(),
       specialty: specialty.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone ? phone.trim() : null,
+      email: cleanEmail,
+      phone: docPhone,
       department: department ? department.trim() : 'General Medicine',
       location: location ? location.trim() : 'Kurnool',
-      medicalLicenseNumber: medicalLicenseNumber.trim(),
+      medicalLicenseNumber: cleanLicense,
       licenseStatus: 'active',
       verificationStatus: 'pending',
       accountStatus: 'active',
@@ -611,54 +649,66 @@ exports.registerDoctor = async (req, res) => {
       await Doctor.create(newDoctor);
       await User.create(newUser);
     } else {
+      if (!memoryStore.doctors) memoryStore.doctors = [];
       memoryStore.doctors.push(newDoctor);
+      if (!memoryStore.users) memoryStore.users = [];
       memoryStore.users.push(newUser);
     }
 
     return res.status(201).json({
       message: `Doctor registration submitted! Your Doctor ID is ${doctorId}. Awaiting license verification.`,
       doctorId,
+      medicalLicenseNumber: cleanLicense,
       verificationStatus: 'pending'
     });
 
   } catch (err) {
     console.error("Error registering doctor:", err);
-    res.status(500).json({ error: "Failed to register doctor license." });
+    res.status(400).json({ error: err.message || "Failed to register doctor license." });
   }
 };
 
 exports.verifyDoctorLicense = async (req, res) => {
   try {
-    const { doctorId } = req.body;
-    if (!doctorId) return res.status(400).json({ error: "Doctor ID is required." });
+    const { doctorId, medicalLicenseNumber } = req.body;
+    if (!doctorId && !medicalLicenseNumber) {
+      return res.status(400).json({ error: "Doctor ID or Medical License Number is required for verification." });
+    }
 
-    const docId = doctorId.toUpperCase();
     let doctor = null;
 
     if (getIsConnectedToMongo()) {
+      const query = doctorId ? { doctorId: doctorId.toUpperCase() } : { medicalLicenseNumber: (medicalLicenseNumber || '').trim().toUpperCase() };
       doctor = await Doctor.findOneAndUpdate(
-        { doctorId: docId },
+        query,
         { $set: { verificationStatus: 'verified', licenseStatus: 'active' } },
         { new: true }
       );
-      await User.findOneAndUpdate(
-        { loginId: docId },
-        { $set: { verificationStatus: 'verified' } }
-      );
+      if (doctor) {
+        await User.findOneAndUpdate(
+          { loginId: doctor.doctorId },
+          { $set: { verificationStatus: 'verified' } }
+        );
+      }
     } else {
-      doctor = memoryStore.doctors.find(d => d.doctorId === docId);
+      doctor = (memoryStore.doctors || []).find(d => 
+        (doctorId && d.doctorId && d.doctorId.toUpperCase() === doctorId.toUpperCase()) || 
+        (medicalLicenseNumber && d.medicalLicenseNumber && d.medicalLicenseNumber.toUpperCase() === medicalLicenseNumber.trim().toUpperCase())
+      );
       if (doctor) {
         doctor.verificationStatus = 'verified';
         doctor.licenseStatus = 'active';
-        const userRec = memoryStore.users.find(u => u.loginId === docId);
+        const userRec = (memoryStore.users || []).find(u => u.loginId === doctor.doctorId);
         if (userRec) userRec.verificationStatus = 'verified';
       }
     }
 
-    if (!doctor) return res.status(404).json({ error: `Doctor ID ${docId} not found.` });
+    if (!doctor) return res.status(404).json({ error: `Matching doctor record not found.` });
 
     return res.json({
-      message: `Doctor ${docId} medical license verified successfully!`,
+      message: `Doctor ${doctor.doctorId} medical license verified successfully!`,
+      doctorId: doctor.doctorId,
+      medicalLicenseNumber: doctor.medicalLicenseNumber,
       verificationStatus: 'verified'
     });
   } catch (err) {
