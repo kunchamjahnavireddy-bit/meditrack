@@ -84,7 +84,9 @@ async function testAdminAndAppointmentsPatientSync() {
   console.log(`  - Email: ${targetPatient.email}`);
   console.log(`  - Address: ${targetPatient.address || targetPatient.patientLocation}`);
 
-  const futureDate = `2026-09-${Math.floor(10 + Math.random() * 18)}`;
+  const futureDate = `2026-10-${Math.floor(10 + Math.random() * 18)}`;
+  const timeSlots = ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '02:00 PM', '03:00 PM', '04:00 PM'];
+  const slotTime = timeSlots[Math.floor(Math.random() * timeSlots.length)];
   const bookRes = await fetch(`${BASE_URL}/api/appointments`, {
     method: 'POST',
     headers: {
@@ -95,7 +97,7 @@ async function testAdminAndAppointmentsPatientSync() {
       patientId: targetPatient.patientId,
       doctorId: 'DOC001',
       appointmentDate: futureDate,
-      appointmentTime: '02:00 PM',
+      appointmentTime: slotTime,
       reason: 'General Consultation Sync Check'
     })
   });

@@ -119,11 +119,11 @@ exports.getAdminPatients = async (req, res) => {
     const { status } = req.query;
     let patients = [];
     if (getIsConnectedToMongo()) {
-      let filter = {};
+      let filter = { isDeleted: { $ne: true } };
       if (status) filter.accountStatus = status.toLowerCase();
       patients = await Patient.find(filter).select('-password').sort({ createdAt: -1 });
     } else {
-      patients = memoryStore.patients || [];
+      patients = (memoryStore.patients || []).filter(p => !p.isDeleted);
       if (status) patients = patients.filter(p => (p.accountStatus || 'active').toLowerCase() === status.toLowerCase());
     }
     return res.json(patients);

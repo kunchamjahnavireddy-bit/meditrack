@@ -135,18 +135,36 @@ function renderPatientInfoCard(pat) {
   const idEl = document.getElementById('display_patient_id');
   const nameEl = document.getElementById('display_patient_name');
   const ageGenderEl = document.getElementById('display_patient_age_gender');
+  const dobEl = document.getElementById('display_patient_dob');
   const phoneEl = document.getElementById('display_patient_phone');
   const emailEl = document.getElementById('display_patient_email');
   const addrEl = document.getElementById('display_patient_address');
+  const bloodEl = document.getElementById('display_patient_blood_group');
+  const emergencyEl = document.getElementById('display_patient_emergency');
+  const insuranceEl = document.getElementById('display_patient_insurance');
+  const aadhaarEl = document.getElementById('display_patient_aadhaar');
+  const allergiesEl = document.getElementById('display_patient_allergies');
+  const diseasesEl = document.getElementById('display_patient_diseases');
+  const medicationsEl = document.getElementById('display_patient_medications');
+  const historyEl = document.getElementById('display_patient_history');
   const patSelect = document.getElementById('patient_id');
 
   if (!pat) {
     if (idEl) idEl.textContent = 'Select Patient Account';
     if (nameEl) nameEl.textContent = '-';
     if (ageGenderEl) ageGenderEl.textContent = '-';
+    if (dobEl) dobEl.textContent = '-';
     if (phoneEl) phoneEl.textContent = '-';
     if (emailEl) emailEl.textContent = '-';
     if (addrEl) addrEl.textContent = '-';
+    if (bloodEl) bloodEl.textContent = '-';
+    if (emergencyEl) emergencyEl.textContent = '-';
+    if (insuranceEl) insuranceEl.textContent = '-';
+    if (aadhaarEl) aadhaarEl.textContent = '-';
+    if (allergiesEl) allergiesEl.textContent = '-';
+    if (diseasesEl) diseasesEl.textContent = '-';
+    if (medicationsEl) medicationsEl.textContent = '-';
+    if (historyEl) historyEl.textContent = '-';
     return;
   }
 
@@ -157,9 +175,18 @@ function renderPatientInfoCard(pat) {
   const genderStr = pat.gender || 'N/A';
   if (ageGenderEl) ageGenderEl.textContent = `${ageStr} • ${genderStr}`;
 
+  if (dobEl) dobEl.textContent = pat.dateOfBirth || '-';
   if (phoneEl) phoneEl.textContent = pat.phone || '-';
   if (emailEl) emailEl.textContent = pat.email || '-';
   if (addrEl) addrEl.textContent = pat.address || pat.patientLocation || '-';
+  if (bloodEl) bloodEl.textContent = pat.bloodGroup || 'Not Specified';
+  if (emergencyEl) emergencyEl.textContent = pat.emergencyContact || pat.emergencyPhone || pat.phone || '-';
+  if (insuranceEl) insuranceEl.textContent = pat.insuranceDetails || 'None';
+  if (aadhaarEl) aadhaarEl.textContent = pat.aadhaarNumber || 'N/A';
+  if (allergiesEl) allergiesEl.textContent = pat.allergies || 'None';
+  if (diseasesEl) diseasesEl.textContent = pat.existingDiseases || 'None';
+  if (medicationsEl) medicationsEl.textContent = pat.currentMedications || 'None';
+  if (historyEl) historyEl.textContent = pat.medicalHistory || 'None';
 
   if (patSelect && pat.patientId) {
     if (!patSelect.querySelector(`option[value="${pat.patientId}"]`)) {
@@ -185,7 +212,7 @@ async function loadDropdownData() {
       if (patSelect && Array.isArray(patients)) {
         patSelect.innerHTML = '<option value="">-- Choose Registered Patient --</option>';
         patients.forEach(pat => {
-          patSelect.innerHTML += `<option value="${pat.patientId}">${pat.patientId} - ${pat.fullName} (${pat.phone})</option>`;
+          patSelect.innerHTML += `<option value="${pat.patientId}">${pat.patientId} – ${pat.fullName} (${pat.phone})</option>`;
         });
 
         patSelect.onchange = async () => {
@@ -194,15 +221,13 @@ async function loadDropdownData() {
             renderPatientInfoCard(null);
             return;
           }
-          const foundPat = patients.find(p => p.patientId && p.patientId.toUpperCase() === selId.toUpperCase());
-          if (foundPat) {
-            renderPatientInfoCard(foundPat);
+          const resSingle = await fetchWithAuth(`/api/patients/${selId}`);
+          if (resSingle.ok) {
+            const singlePat = await resSingle.json();
+            renderPatientInfoCard(singlePat);
           } else {
-            const resSingle = await fetchWithAuth(`/api/patients/${selId}`);
-            if (resSingle.ok) {
-              const singlePat = await resSingle.json();
-              renderPatientInfoCard(singlePat);
-            }
+            const foundPat = patients.find(p => p.patientId && p.patientId.toUpperCase() === selId.toUpperCase());
+            renderPatientInfoCard(foundPat || null);
           }
         };
 

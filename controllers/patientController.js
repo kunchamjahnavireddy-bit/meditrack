@@ -320,20 +320,37 @@ exports.getPatients = async (req, res) => {
     const query = req.query.q ? req.query.q.trim().toUpperCase() : '';
 
     if (getIsConnectedToMongo()) {
-      let filter = {};
+      let filter = { isDeleted: { $ne: true } };
       if (query) {
-        filter = {
-          $or: [
-            { patientId: new RegExp(query, 'i') },
-            { fullName: new RegExp(query, 'i') },
-            { phone: new RegExp(query, 'i') }
-          ]
-        };
+        filter.$or = [
+          { patientId: new RegExp(query, 'i') },
+          { fullName: new RegExp(query, 'i') },
+          { phone: new RegExp(query, 'i') }
+        ];
       }
-      const patients = await Patient.find(filter).select('-password').sort({ createdAt: -1 });
-      return res.json(patients);
+      const patients = await Patient.find(filter).select('-password').sort({ createdAt: -1 }).lean();
+      const profiles = await PatientProfile.find({}).lean();
+      const profileMap = new Map(profiles.map(p => [(p.patientId || '').toUpperCase(), p]));
+
+      const combined = patients.map(p => {
+        const prof = profileMap.get((p.patientId || '').toUpperCase()) || {};
+        return {
+          ...p,
+          bloodGroup: prof.bloodGroup || 'Not Specified',
+          allergies: prof.allergies || 'None',
+          existingDiseases: prof.existingDiseases || 'None',
+          medicalHistory: prof.medicalHistory || 'None',
+          currentMedications: prof.currentMedications || 'None',
+          previousSurgeries: prof.previousSurgeries || 'None',
+          emergencyContact: prof.emergencyPhone ? `${prof.emergencyName || 'Emergency'} (${prof.emergencyPhone})` : (prof.emergencyContact || 'N/A'),
+          insuranceDetails: prof.insuranceDetails || p.insuranceDetails || 'None',
+          aadhaarNumber: p.aadhaarNumber || prof.aadhaarNumber || 'N/A'
+        };
+      });
+
+      return res.json(combined);
     } else {
-      let patients = memoryStore.patients;
+      let patients = memoryStore.patients || [];
       if (query) {
         patients = patients.filter(p =>
           p.patientId.toUpperCase().includes(query) ||
@@ -341,7 +358,23 @@ exports.getPatients = async (req, res) => {
           p.phone.includes(query)
         );
       }
-      return res.json(patients);
+      const profiles = memoryStore.profiles || [];
+      const combined = patients.map(p => {
+        const prof = profiles.find(pr => (pr.patientId || '').toUpperCase() === p.patientId.toUpperCase()) || {};
+        return {
+          ...p,
+          bloodGroup: prof.bloodGroup || 'Not Specified',
+          allergies: prof.allergies || 'None',
+          existingDiseases: prof.existingDiseases || 'None',
+          medicalHistory: prof.medicalHistory || 'None',
+          currentMedications: prof.currentMedications || 'None',
+          previousSurgeries: prof.previousSurgeries || 'None',
+          emergencyContact: prof.emergencyPhone ? `${prof.emergencyName || 'Emergency'} (${prof.emergencyPhone})` : (prof.emergencyContact || 'N/A'),
+          insuranceDetails: prof.insuranceDetails || p.insuranceDetails || 'None',
+          aadhaarNumber: p.aadhaarNumber || prof.aadhaarNumber || 'N/A'
+        };
+      });
+      return res.json(combined);
     }
   } catch (err) {
     console.error("Error searching patients:", err);
@@ -362,17 +395,45 @@ exports.getPatientById = async (req, res) => {
     pid = pid.trim().toUpperCase();
 
     if (getIsConnectedToMongo()) {
-      const patient = await Patient.findOne({ patientId: new RegExp(`^${pid}$`, 'i') }).select('-password');
+      const patient = await Patient.findOne({ patientId: new RegExp(`^${pid}$`, 'i') }).select('-password').lean();
       if (!patient) {
         return res.status(404).json({ error: `Patient ID ${pid} not found in database.` });
       }
-      return res.json(patient);
+
+      const prof = await PatientProfile.findOne({ patientId: new RegExp(`^${pid}$`, 'i') }).lean();
+      const combined = {
+        ...patient,
+        bloodGroup: prof ? (prof.bloodGroup || 'Not Specified') : 'Not Specified',
+        allergies: prof ? (prof.allergies || 'None') : 'None',
+        existingDiseases: prof ? (prof.existingDiseases || 'None') : 'None',
+        medicalHistory: prof ? (prof.medicalHistory || 'None') : 'None',
+        currentMedications: prof ? (prof.currentMedications || 'None') : 'None',
+        previousSurgeries: prof ? (prof.previousSurgeries || 'None') : 'None',
+        emergencyContact: prof ? (prof.emergencyPhone ? `${prof.emergencyName || 'Emergency'} (${prof.emergencyPhone})` : (prof.emergencyContact || 'N/A')) : 'N/A',
+        insuranceDetails: (prof && prof.insuranceDetails) || patient.insuranceDetails || 'None',
+        aadhaarNumber: patient.aadhaarNumber || (prof && prof.aadhaarNumber) || 'N/A'
+      };
+
+      return res.json(combined);
     } else {
       const patient = (memoryStore.patients || []).find(p => p.patientId.toUpperCase() === pid);
       if (!patient) {
         return res.status(404).json({ error: `Patient ID ${pid} not found.` });
       }
-      return res.json(patient);
+      const prof = (memoryStore.profiles || []).find(pr => (pr.patientId || '').toUpperCase() === pid);
+      const combined = {
+        ...patient,
+        bloodGroup: prof ? (prof.bloodGroup || 'Not Specified') : 'Not Specified',
+        allergies: prof ? (prof.allergies || 'None') : 'None',
+        existingDiseases: prof ? (prof.existingDiseases || 'None') : 'None',
+        medicalHistory: prof ? (prof.medicalHistory || 'None') : 'None',
+        currentMedications: prof ? (prof.currentMedications || 'None') : 'None',
+        previousSurgeries: prof ? (prof.previousSurgeries || 'None') : 'None',
+        emergencyContact: prof ? (prof.emergencyPhone ? `${prof.emergencyName || 'Emergency'} (${prof.emergencyPhone})` : (prof.emergencyContact || 'N/A')) : 'N/A',
+        insuranceDetails: (prof && prof.insuranceDetails) || patient.insuranceDetails || 'None',
+        aadhaarNumber: patient.aadhaarNumber || (prof && prof.aadhaarNumber) || 'N/A'
+      };
+      return res.json(combined);
     }
   } catch (err) {
     console.error("Error getting patient by ID:", err);
