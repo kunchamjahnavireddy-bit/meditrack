@@ -175,51 +175,50 @@ function renderPatientInfoCard(pat) {
 async function loadDropdownData() {
   try {
     const user = getCurrentUser();
-    const isPatient = user && user.role === 'patient';
     const patientGroup = document.getElementById('patient-select-group');
+    if (patientGroup) patientGroup.style.display = 'block';
 
-    if (isPatient) {
-      if (patientGroup) patientGroup.style.display = 'none';
-      const resMe = await fetchWithAuth('/api/patients/me');
-      if (resMe.ok) {
-        const myProfile = await resMe.json();
-        renderPatientInfoCard(myProfile);
-      }
-    } else {
-      if (patientGroup) patientGroup.style.display = 'block';
-      const resPat = await fetchWithAuth('/api/patients');
-      if (resPat.ok) {
-        const patients = await resPat.json();
-        const patSelect = document.getElementById('patient_id');
-        if (patSelect && Array.isArray(patients)) {
-          patSelect.innerHTML = '<option value="">-- Choose Registered Patient --</option>';
-          patients.forEach(pat => {
-            patSelect.innerHTML += `<option value="${pat.patientId}">${pat.patientId} - ${pat.fullName} (${pat.phone})</option>`;
-          });
+    const resPat = await fetchWithAuth('/api/patients');
+    if (resPat.ok) {
+      const patients = await resPat.json();
+      const patSelect = document.getElementById('patient_id');
+      if (patSelect && Array.isArray(patients)) {
+        patSelect.innerHTML = '<option value="">-- Choose Registered Patient --</option>';
+        patients.forEach(pat => {
+          patSelect.innerHTML += `<option value="${pat.patientId}">${pat.patientId} - ${pat.fullName} (${pat.phone})</option>`;
+        });
 
-          patSelect.onchange = async () => {
-            const selId = patSelect.value;
-            if (!selId) {
-              renderPatientInfoCard(null);
-              return;
-            }
-            const foundPat = patients.find(p => p.patientId && p.patientId.toUpperCase() === selId.toUpperCase());
-            if (foundPat) {
-              renderPatientInfoCard(foundPat);
-            } else {
-              const resSingle = await fetchWithAuth(`/api/patients/${selId}`);
-              if (resSingle.ok) {
-                const singlePat = await resSingle.json();
-                renderPatientInfoCard(singlePat);
-              }
-            }
-          };
-
-          if (patSelect.value) {
-            patSelect.onchange();
-          } else {
+        patSelect.onchange = async () => {
+          const selId = patSelect.value;
+          if (!selId) {
             renderPatientInfoCard(null);
+            return;
           }
+          const foundPat = patients.find(p => p.patientId && p.patientId.toUpperCase() === selId.toUpperCase());
+          if (foundPat) {
+            renderPatientInfoCard(foundPat);
+          } else {
+            const resSingle = await fetchWithAuth(`/api/patients/${selId}`);
+            if (resSingle.ok) {
+              const singlePat = await resSingle.json();
+              renderPatientInfoCard(singlePat);
+            }
+          }
+        };
+
+        // Pre-select logged-in patient's patientId if applicable
+        if (user && (user.patientId || (user.role === 'patient' && user.loginId))) {
+          const targetId = (user.patientId || user.loginId).toUpperCase();
+          const matchOpt = Array.from(patSelect.options).find(opt => opt.value.toUpperCase() === targetId);
+          if (matchOpt) {
+            patSelect.value = matchOpt.value;
+          }
+        }
+
+        if (patSelect.value) {
+          patSelect.onchange();
+        } else {
+          renderPatientInfoCard(null);
         }
       }
     }

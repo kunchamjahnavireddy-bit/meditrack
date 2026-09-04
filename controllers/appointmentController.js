@@ -113,7 +113,7 @@ exports.createAppointment = async (req, res) => {
   try {
     const { doctorId, appointmentDate, appointmentTime, reason } = req.body;
 
-    const patientId = req.user && req.user.patientId ? req.user.patientId.toUpperCase() : (req.body.patientId ? req.body.patientId.toUpperCase() : null);
+    const patientId = ((req.body && req.body.patientId) || (req.user && (req.user.patientId || req.user.loginId)) || '').trim().toUpperCase();
 
     if (!patientId) {
       return res.status(401).json({ error: "Authentication Required: Please select a valid patient to book an appointment." });
@@ -130,7 +130,7 @@ exports.createAppointment = async (req, res) => {
     let patientLocation = 'Kurnool';
 
     if (getIsConnectedToMongo()) {
-      const pat = await Patient.findOne({ patientId });
+      const pat = await Patient.findOne({ patientId: new RegExp(`^${patientId}$`, 'i') });
       if (pat) {
         patientName = pat.fullName;
         patientLocation = pat.patientLocation || (pat.address ? pat.address.split(',')[0].trim() : 'Kurnool');

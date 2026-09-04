@@ -72,11 +72,11 @@ router.post(
   patientController.updatePatient
 );
 
-// GET search patients catalog (Doctor, Receptionist, Admin)
+// GET search patients catalog (Patient, Doctor, Receptionist, Admin)
 router.get(
   '/',
   authenticateUser,
-  requireRole(['doctor', 'receptionist', 'admin']),
+  requireRole(['patient', 'doctor', 'receptionist', 'admin']),
   patientController.getPatients
 );
 
