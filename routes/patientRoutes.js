@@ -72,21 +72,20 @@ router.post(
   patientController.updatePatient
 );
 
-// GET search patients catalog (Doctor, Receptionist)
+// GET search patients catalog (Doctor, Receptionist, Admin)
 router.get(
   '/',
   authenticateUser,
-  requireRole(['doctor', 'receptionist']),
+  requireRole(['doctor', 'receptionist', 'admin']),
   patientController.getPatients
 );
 
-// GET single patient info by ID (Patient own only, Doctor with relationship)
+// GET single patient info by ID (Patient own only, Doctor, Receptionist, Admin)
 router.get(
   '/:patientId',
   authenticateUser,
-  requireRole(['patient', 'doctor']),
+  requireRole(['patient', 'doctor', 'receptionist', 'admin']),
   enforcePatientDataIsolation,
-  enforceDoctorPatientRelationship,
   patientController.getPatientById
 );
 

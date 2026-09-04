@@ -75,7 +75,8 @@ const enforcePatientDataIsolation = (req, res, next) => {
   if (req.user.role === 'receptionist') {
     const isPrescriptionRoute = req.originalUrl.includes('/prescriptions');
     const isAppointmentRoute = req.originalUrl.includes('/appointments');
-    if (!isPrescriptionRoute && !isAppointmentRoute) {
+    const isPatientRoute = req.originalUrl.includes('/patients');
+    if (!isPrescriptionRoute && !isAppointmentRoute && !isPatientRoute) {
       return res.status(403).json({ error: 'Access Denied: Receptionists do not have permission to view complete medical profiles.' });
     }
   }

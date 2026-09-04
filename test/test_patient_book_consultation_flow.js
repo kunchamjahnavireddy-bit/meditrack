@@ -41,7 +41,7 @@ async function runPatientBookConsultationFlowTests() {
 
   // Step 3: Select Doctor DOC001 & Book Appointment
   console.log('\nStep 3: Patient PAT001 booking consultation with Doctor DOC001...');
-  const futureDate = '2026-09-15';
+  const futureDate = `2026-09-${Math.floor(10 + Math.random() * 18)}`;
   const slotTime = '11:00 AM';
 
   const bookRes = await fetch(`${BASE_URL}/api/appointments`, {

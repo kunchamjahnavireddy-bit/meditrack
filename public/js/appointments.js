@@ -132,7 +132,6 @@ function selectDoctorForBooking(doctorId) {
 }
 
 function renderPatientInfoCard(pat) {
-  if (!pat) return;
   const idEl = document.getElementById('display_patient_id');
   const nameEl = document.getElementById('display_patient_name');
   const ageGenderEl = document.getElementById('display_patient_age_gender');
@@ -141,18 +140,32 @@ function renderPatientInfoCard(pat) {
   const addrEl = document.getElementById('display_patient_address');
   const patSelect = document.getElementById('patient_id');
 
+  if (!pat) {
+    if (idEl) idEl.textContent = 'Select Patient Account';
+    if (nameEl) nameEl.textContent = '-';
+    if (ageGenderEl) ageGenderEl.textContent = '-';
+    if (phoneEl) phoneEl.textContent = '-';
+    if (emailEl) emailEl.textContent = '-';
+    if (addrEl) addrEl.textContent = '-';
+    return;
+  }
+
   if (idEl) idEl.textContent = pat.patientId || 'PAT-N/A';
   if (nameEl) nameEl.textContent = pat.fullName || '-';
-  if (ageGenderEl) ageGenderEl.textContent = `${pat.age || 'N/A'} Yrs • ${pat.gender || 'N/A'}`;
+
+  const ageStr = (pat.age !== undefined && pat.age !== null && pat.age !== '') ? `${pat.age} Yrs` : 'N/A';
+  const genderStr = pat.gender || 'N/A';
+  if (ageGenderEl) ageGenderEl.textContent = `${ageStr} • ${genderStr}`;
+
   if (phoneEl) phoneEl.textContent = pat.phone || '-';
   if (emailEl) emailEl.textContent = pat.email || '-';
   if (addrEl) addrEl.textContent = pat.address || pat.patientLocation || '-';
 
-  if (patSelect) {
+  if (patSelect && pat.patientId) {
     if (!patSelect.querySelector(`option[value="${pat.patientId}"]`)) {
       const opt = document.createElement('option');
       opt.value = pat.patientId;
-      opt.textContent = `${pat.patientId} - ${pat.fullName}`;
+      opt.textContent = `${pat.patientId} - ${pat.fullName || ''}`;
       patSelect.appendChild(opt);
     }
     patSelect.value = pat.patientId;
@@ -184,15 +197,29 @@ async function loadDropdownData() {
             patSelect.innerHTML += `<option value="${pat.patientId}">${pat.patientId} - ${pat.fullName} (${pat.phone})</option>`;
           });
 
-          patSelect.addEventListener('change', async () => {
+          patSelect.onchange = async () => {
             const selId = patSelect.value;
-            if (!selId) return;
-            const resSingle = await fetchWithAuth(`/api/patients/${selId}`);
-            if (resSingle.ok) {
-              const singlePat = await resSingle.json();
-              renderPatientInfoCard(singlePat);
+            if (!selId) {
+              renderPatientInfoCard(null);
+              return;
             }
-          });
+            const foundPat = patients.find(p => p.patientId && p.patientId.toUpperCase() === selId.toUpperCase());
+            if (foundPat) {
+              renderPatientInfoCard(foundPat);
+            } else {
+              const resSingle = await fetchWithAuth(`/api/patients/${selId}`);
+              if (resSingle.ok) {
+                const singlePat = await resSingle.json();
+                renderPatientInfoCard(singlePat);
+              }
+            }
+          };
+
+          if (patSelect.value) {
+            patSelect.onchange();
+          } else {
+            renderPatientInfoCard(null);
+          }
         }
       }
     }
