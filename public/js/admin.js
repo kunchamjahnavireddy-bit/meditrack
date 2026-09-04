@@ -423,12 +423,14 @@ function initDoctorFormHandler() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const phoneEl = document.getElementById('doc_phone');
     const payload = {
       name: document.getElementById('doc_name').value.trim(),
       email: document.getElementById('doc_email').value.trim(),
       specialty: document.getElementById('doc_specialty').value.trim(),
       department: document.getElementById('doc_department').value.trim(),
       medicalLicenseNumber: document.getElementById('doc_license').value.trim(),
+      phone: phoneEl ? phoneEl.value.trim() : '+91 98765 43210',
       location: document.getElementById('doc_location').value.trim(),
       password: document.getElementById('doc_password').value.trim()
     };
@@ -446,7 +448,7 @@ function initDoctorFormHandler() {
         return;
       }
 
-      showToast(`Doctor account created successfully (${data.doctorId})!`, 'success');
+      showToast(`Doctor account registered successfully! Auto-assigned Doctor ID: ${data.doctorId || (data.doctor && data.doctor.doctorId)}`, 'success');
       toggleDoctorModal(false);
       form.reset();
       fetchAdminDoctors();

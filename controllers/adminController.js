@@ -303,27 +303,59 @@ exports.getAdminDoctors = async (req, res) => {
   }
 };
 
+// Helper: Generate next Doctor ID for Admin Doctor Registration
+const generateNextDoctorId = async () => {
+  if (getIsConnectedToMongo()) {
+    const allDoctors = await Doctor.find({}, { doctorId: 1 });
+    let maxNum = 0;
+    allDoctors.forEach(d => {
+      if (d.doctorId && d.doctorId.toUpperCase().startsWith('DOC')) {
+        const num = parseInt(d.doctorId.toUpperCase().replace('DOC', ''), 10);
+        if (!isNaN(num) && num > maxNum) maxNum = num;
+      }
+    });
+    let nextNum = maxNum + 1;
+    let candidate = `DOC${String(nextNum).padStart(3, '0')}`;
+    while (await Doctor.findOne({ doctorId: candidate })) {
+      nextNum++;
+      candidate = `DOC${String(nextNum).padStart(3, '0')}`;
+    }
+    return candidate;
+  } else {
+    let maxNum = 0;
+    (memoryStore.doctors || []).forEach(d => {
+      if (d.doctorId && d.doctorId.toUpperCase().startsWith('DOC')) {
+        const num = parseInt(d.doctorId.toUpperCase().replace('DOC', ''), 10);
+        if (!isNaN(num) && num > maxNum) maxNum = num;
+      }
+    });
+    let nextNum = maxNum + 1;
+    let candidate = `DOC${String(nextNum).padStart(3, '0')}`;
+    while ((memoryStore.doctors || []).some(d => d.doctorId && d.doctorId.toUpperCase() === candidate)) {
+      nextNum++;
+      candidate = `DOC${String(nextNum).padStart(3, '0')}`;
+    }
+    return candidate;
+  }
+};
+
 // 6. POST /api/admin/doctors (Admin Creates New Doctor Account)
 exports.createDoctor = async (req, res) => {
   try {
     const { name, specialty, department, medicalLicenseNumber, phone, email, location, password } = req.body;
 
-    if (!name || !specialty || !medicalLicenseNumber || !phone || !email) {
-      return res.status(400).json({ error: "Name, Specialty, License Number, Phone, and Email are required." });
+    if (!name || !specialty || !medicalLicenseNumber || !email) {
+      return res.status(400).json({ error: "Name, Specialty, License Number, and Email are required." });
     }
 
     const adminId = (req.user && req.user.adminId) || (req.user && req.user.loginId) || 'ADM001';
 
-    // Auto-generate Unique Doctor ID
-    let count = 1;
-    if (getIsConnectedToMongo()) {
-      count = await Doctor.countDocuments() + 1;
-    } else {
-      count = (memoryStore.doctors || []).length + 1;
-    }
-    const doctorId = 'DOC' + String(count).padStart(3, '0');
+    // Auto-generate Unique Doctor ID (DOC005, DOC006...)
+    const doctorId = await generateNextDoctorId();
     const docPassword = password ? password.trim() : 'doc123';
     const hashedPassword = hashPassword(docPassword);
+
+    const docPhone = (phone && phone.trim()) ? phone.trim() : '+91 98765 43210';
 
     const newDoctor = {
       doctorId,
@@ -335,7 +367,7 @@ exports.createDoctor = async (req, res) => {
       licenseStatus: 'active',
       verificationStatus: 'verified',
       accountStatus: 'active',
-      phone: phone.trim(),
+      phone: docPhone,
       email: email.trim().toLowerCase(),
       location: location ? location.trim() : 'Kurnool',
       createdAt: new Date()
@@ -361,16 +393,17 @@ exports.createDoctor = async (req, res) => {
       memoryStore.users.push(newUser);
     }
 
-    await createAdminAuditEntry(adminId, 'DOCTOR_CREATED', doctorId, 'doctor', 'N/A', 'active', `Registered doctor ${name} (${medicalLicenseNumber})`);
+    await createAdminAuditEntry(adminId, 'DOCTOR_CREATED', doctorId, 'doctor', 'N/A', 'active', `Registered doctor ${name} (${medicalLicenseNumber}) with ID ${doctorId}`);
 
     return res.status(201).json({
       message: `Doctor account registered successfully with ID: ${doctorId}`,
+      doctorId,
       doctor: newDoctor
     });
 
   } catch (err) {
-    console.error("Error creating doctor account:", err);
-    res.status(500).json({ error: "Failed to register doctor account." });
+    console.error("Error creating doctor:", err);
+    res.status(500).json({ error: err.message || "Failed to register doctor account." });
   }
 };
 
