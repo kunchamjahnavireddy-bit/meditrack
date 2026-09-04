@@ -212,7 +212,7 @@ async function loadDropdownData() {
       if (patSelect && Array.isArray(patients)) {
         patSelect.innerHTML = '<option value="">-- Choose Registered Patient --</option>';
         patients.forEach(pat => {
-          patSelect.innerHTML += `<option value="${pat.patientId}">${pat.patientId} – ${pat.fullName} (${pat.phone})</option>`;
+          patSelect.innerHTML += `<option value="${pat.patientId}">${pat.patientId} - ${pat.fullName}</option>`;
         });
 
         patSelect.onchange = async () => {

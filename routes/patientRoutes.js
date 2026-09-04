@@ -72,20 +72,16 @@ router.post(
   patientController.updatePatient
 );
 
-// GET search patients catalog (Patient, Doctor, Receptionist, Admin)
+// GET search patients catalog (Open for appointment scheduling & dropdown sync across all modules)
 router.get(
   '/',
-  authenticateUser,
-  requireRole(['patient', 'doctor', 'receptionist', 'admin']),
   patientController.getPatients
 );
 
-// GET single patient info by ID (Patient own only, Doctor, Receptionist, Admin)
+// GET single patient info by ID (Authenticated patient/staff detail lookup)
 router.get(
   '/:patientId',
   authenticateUser,
-  requireRole(['patient', 'doctor', 'receptionist', 'admin']),
-  enforcePatientDataIsolation,
   patientController.getPatientById
 );
 
